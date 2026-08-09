@@ -81,7 +81,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 
 <div class="main-container">
     <div class="aside">
-        <div class="logo"><a href="#"><?= Helpers::e(Helpers::strimwidth($teacher['full_name'], 16)) ?></a></div>
+        <div class="logo"><a href="#"><?= Helpers::e(Helpers::firstName($teacher['full_name'])) ?></a></div>
         <div class="nav-toggler"><span><i class="fa fa-bars"></i></span></div>
         <ul class="nav">
             <li><a href="#home" class="active"><i class="fas fa-home"></i>home</a></li>

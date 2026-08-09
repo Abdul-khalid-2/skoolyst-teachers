@@ -47,6 +47,12 @@ class Helpers
         return strlen($text) > $length ? substr($text, 0, $length) . $suffix : $text;
     }
 
+    public static function firstName($name)
+    {
+        return explode(' ', trim($name))[0];
+    }
+
+
     public static function initial(?string $text): string
     {
         $text = trim((string) $text);

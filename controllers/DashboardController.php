@@ -105,6 +105,14 @@ class DashboardController extends Controller
         $filename = 'p_' . $user['uuid'] . '_' . time() . '.' . strtolower($ext);
         move_uploaded_file($file['tmp_name'], UPLOAD_PROFILE_DIR . '/' . $filename);
 
+        // Remove the previous photo now that the new one is safely saved
+        if (!empty($user['profile_photo'])) {
+            $oldPath = ASSETS_PATH . '/' . $user['profile_photo'];
+            if (is_file($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
         Teacher::updateProfile($user['id'], ['profile_photo' => 'uploads/profile/' . $filename]);
         Helpers::flash('success', 'Profile photo updated.');
         $this->redirect('/dashboard?tab=basic');

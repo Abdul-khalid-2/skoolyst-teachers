@@ -79,10 +79,18 @@ class Teacher extends Model
         $where = ["role = 'teacher'", "status = 'active'", "is_public = 1"];
         $params = [];
 
+        // if (!empty($filters['q'])) {
+        //     $where[] = '(full_name LIKE :q OR profession_title LIKE :q OR bio LIKE :q)';
+        //     $params['q'] = '%' . $filters['q'] . '%';
+        // }
+
         if (!empty($filters['q'])) {
-            $where[] = '(full_name LIKE :q OR profession_title LIKE :q OR bio LIKE :q)';
-            $params['q'] = '%' . $filters['q'] . '%';
+            $where[] = '(full_name LIKE :q1 OR profession_title LIKE :q2 OR bio LIKE :q3)';
+            $params['q1'] = '%' . $filters['q'] . '%';
+            $params['q2'] = '%' . $filters['q'] . '%';
+            $params['q3'] = '%' . $filters['q'] . '%';
         }
+
         if (!empty($filters['subject'])) {
             $where[] = 'subject = :subject';
             $params['subject'] = $filters['subject'];
