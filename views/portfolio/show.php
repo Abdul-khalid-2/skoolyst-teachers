@@ -33,12 +33,13 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <style>
         html, body { max-width: 100%; overflow-x: hidden; }
         * { box-sizing: border-box; }
+        :root { --owner-banner-h: 0px; --mobile-navbar-h: 60px; }
         .mobile-navbar { display: none; }
         /* Breakpoint matches the sidebar's own collapse point (1199px) so there is
            never a gap where neither the sidebar nor the mobile menu is visible. */
         @media (max-width: 1199px) {
             .aside { display: none; }
-            .mobile-navbar { display: block; position: fixed; top: 0; left: 0; width: 100%; background-color: var(--bg-black-100); color: var(--text-black-900); z-index: 999; border-bottom: 1px solid var(--bg-black-50); }
+            .mobile-navbar { display: block; position: fixed; top: var(--owner-banner-h, 0px); left: 0; width: 100%; background-color: var(--bg-black-100); color: var(--text-black-900); z-index: 999; border-bottom: 1px solid var(--bg-black-50); }
             .mobile-navbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; }
             .mobile-logo a { color: var(--text-black-900); font-size: 22px; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
             .mobile-menu-toggle { border: none; background: transparent; color: var(--skin-color); font-size: 24px; cursor: pointer; flex-shrink: 0; }
@@ -47,7 +48,9 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
             .mobile-nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
             .mobile-nav-links li a { display: flex; align-items: center; gap: 10px; padding: 15px 20px; color: var(--text-black-900); text-decoration: none; border-bottom: 1px solid var(--bg-black-50); }
             .mobile-nav-links li a.active, .mobile-nav-links li a:hover { color: var(--skin-color); }
-            .main-containt { padding-left: 0 !important; padding-top: 70px; }
+            /* padding-top is set to the ACTUAL rendered navbar height (measured in JS below),
+               not a guessed pixel value, so it never drifts out of sync with real content. */
+            .main-containt { padding-left: 0 !important; padding-top: calc(var(--owner-banner-h, 0px) + var(--mobile-navbar-h, 60px)); }
             .section { padding: 0 15px; }
             html { scroll-behavior: smooth; }
         }
@@ -58,6 +61,8 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
         }
         .owner-banner { background:#0A2D52;color:#fff;text-align:center;padding:10px 16px;font-size:13.5px; }
         .owner-banner a { color:#fff;text-decoration:underline;font-weight:600; }
+        /* Keep the desktop sidebar below the owner-preview banner instead of overlapping it. */
+        .aside { top: var(--owner-banner-h, 0px) !important; height: calc(100% - var(--owner-banner-h, 0px)) !important; }
         .share-floating { position:fixed; bottom:22px; right:22px; z-index:998; display:flex; flex-direction:column; gap:10px; align-items:flex-end; max-width: calc(100% - 24px); }
         .share-floating a, .share-floating button { background:var(--skin-color); color:#fff; border:none; padding:12px 18px; border-radius:30px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.25); cursor:pointer; display:flex; align-items:center; gap:8px; text-decoration:none; white-space: nowrap; }
         @media (max-width: 480px) {
@@ -70,13 +75,13 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 <body>
 
 <?php if ($isOwner): ?>
-    <div class="owner-banner">
+    <div class="owner-banner" id="ownerBanner">
         This is a preview of your live portfolio. <a href="<?= Helpers::url('/dashboard') ?>">Edit your portfolio</a>
         <?php if (!$teacher['is_public']): ?> &nbsp;|&nbsp; <strong>Hidden from public directory</strong><?php endif; ?>
     </div>
 <?php endif; ?>
 
-<div class="mobile-navbar">
+<div class="mobile-navbar" id="mobileNavbar">
     <div class="mobile-navbar-inner">
         <div class="mobile-logo"><a href="#"><?= Helpers::e($teacher['full_name']) ?></a></div>
         <button class="mobile-menu-toggle" type="button" aria-label="Open menu">&#9776;</button>
@@ -350,6 +355,29 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 <script src="<?= Helpers::asset('js/Script.js') ?>"></script>
 <script src="<?= Helpers::asset('js/style-switcher.js') ?>"></script>
 <script>
+(function () {
+    // Keep the fixed owner-banner / mobile-navbar heights in sync with their
+    // real rendered size (fonts, wrapping, and screen width can all change
+    // this), instead of hardcoding a guessed padding-top that drifts out of
+    // sync and leaves an odd gap above the page content.
+    var root = document.documentElement;
+    function syncFixedHeaderOffsets() {
+        var banner = document.getElementById('ownerBanner');
+        var navbar = document.getElementById('mobileNavbar');
+        root.style.setProperty('--owner-banner-h', (banner ? banner.offsetHeight : 0) + 'px');
+        if (navbar) {
+            root.style.setProperty('--mobile-navbar-h', navbar.offsetHeight + 'px');
+        }
+    }
+    syncFixedHeaderOffsets();
+    window.addEventListener('resize', syncFixedHeaderOffsets);
+    window.addEventListener('orientationchange', syncFixedHeaderOffsets);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(syncFixedHeaderOffsets);
+    }
+    window.addEventListener('load', syncFixedHeaderOffsets);
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
     var menuToggle = document.querySelector('.mobile-menu-toggle');
     var mobileDropdown = document.querySelector('.mobile-nav-dropdown');
