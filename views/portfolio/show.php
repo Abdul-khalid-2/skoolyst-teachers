@@ -31,14 +31,18 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <link rel="stylesheet" href="<?= Helpers::asset('css/style.switcher.css') ?>">
 
     <style>
+        html, body { max-width: 100%; overflow-x: hidden; }
+        * { box-sizing: border-box; }
         .mobile-navbar { display: none; }
-        @media (max-width: 768px) {
+        /* Breakpoint matches the sidebar's own collapse point (1199px) so there is
+           never a gap where neither the sidebar nor the mobile menu is visible. */
+        @media (max-width: 1199px) {
             .aside { display: none; }
             .mobile-navbar { display: block; position: fixed; top: 0; left: 0; width: 100%; background-color: var(--bg-black-100); color: var(--text-black-900); z-index: 999; border-bottom: 1px solid var(--bg-black-50); }
             .mobile-navbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; }
-            .mobile-logo a { color: var(--text-black-900); font-size: 22px; font-weight: 700; text-decoration: none; }
-            .mobile-menu-toggle { border: none; background: transparent; color: var(--skin-color); font-size: 24px; cursor: pointer; }
-            .mobile-nav-dropdown { display: none; background-color: var(--bg-black-100); border-top: 1px solid var(--bg-black-50); }
+            .mobile-logo a { color: var(--text-black-900); font-size: 22px; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+            .mobile-menu-toggle { border: none; background: transparent; color: var(--skin-color); font-size: 24px; cursor: pointer; flex-shrink: 0; }
+            .mobile-nav-dropdown { display: none; background-color: var(--bg-black-100); border-top: 1px solid var(--bg-black-50); max-height: calc(100vh - 60px); overflow-y: auto; }
             .mobile-nav-dropdown.active { display: block; }
             .mobile-nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
             .mobile-nav-links li a { display: flex; align-items: center; gap: 10px; padding: 15px 20px; color: var(--text-black-900); text-decoration: none; border-bottom: 1px solid var(--bg-black-50); }
@@ -47,10 +51,19 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
             .section { padding: 0 15px; }
             html { scroll-behavior: smooth; }
         }
+        @media (max-width: 480px) {
+            .mobile-navbar-inner { padding: 12px 15px; }
+            .mobile-logo a { font-size: 18px; }
+            .section { padding: 0 12px; }
+        }
         .owner-banner { background:#0A2D52;color:#fff;text-align:center;padding:10px 16px;font-size:13.5px; }
         .owner-banner a { color:#fff;text-decoration:underline;font-weight:600; }
-        .share-floating { position:fixed; bottom:22px; right:22px; z-index:998; display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
-        .share-floating a, .share-floating button { background:var(--skin-color); color:#fff; border:none; padding:12px 18px; border-radius:30px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.25); cursor:pointer; display:flex; align-items:center; gap:8px; text-decoration:none; }
+        .share-floating { position:fixed; bottom:22px; right:22px; z-index:998; display:flex; flex-direction:column; gap:10px; align-items:flex-end; max-width: calc(100% - 24px); }
+        .share-floating a, .share-floating button { background:var(--skin-color); color:#fff; border:none; padding:12px 18px; border-radius:30px; font-size:13.5px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,.25); cursor:pointer; display:flex; align-items:center; gap:8px; text-decoration:none; white-space: nowrap; }
+        @media (max-width: 480px) {
+            .share-floating { bottom:14px; right:14px; }
+            .share-floating a, .share-floating button { padding:10px 14px; font-size:12px; }
+        }
     </style>
     <title><?= Helpers::e($title) ?></title>
 </head>

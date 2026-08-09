@@ -19,6 +19,11 @@ body.dark{
 
 }
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     line-height: 1.5;
     font-size: 16px;
@@ -31,6 +36,11 @@ body {
     text-decoration: none;
     outline: none;
     box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 ::before,
@@ -278,6 +288,8 @@ h3.my-profession{
     margin-left: 15px;
     font-size: 20px;
     color: var(--text-black-700);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .home .home-img{
     /* test border: #302e4d solid 1px; */
@@ -341,6 +353,8 @@ h3.my-profession{
     font-size: 17px;
     line-height: 25px;
     color: var(--text-black-700);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .about .about-content .personal-info{
     flex: 0 0 60%;
@@ -358,12 +372,21 @@ h3.my-profession{
     font-size: 16px;
     color: var(--text-black-900);
     border-bottom: 1px solid var(--bg-black-50);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .about .about-content .personal-info .info-item p span{
     font-weight: 400;
     color: var(--text-black-700);
     margin-left: 4px;
     display: inline-block;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+}
+.about .about-content .personal-info .info-item p span a{
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .about .about-content .personal-info .buttons{
     margin-top: 30px;
@@ -496,6 +519,8 @@ h3.my-profession{
     font-size: 16px;
     text-align: justify;
     color: var(--text-black-700);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .about .about-content .timeline .timeline-text ul,
 .about .about-content .timeline .timeline-item > ul{
@@ -643,6 +668,8 @@ color: #ffffffff;
     color: var(--text-black-700);
     margin-bottom: 16px;
     flex: 1;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .portfolio .portfolio-info .portfolio-link{
     font-size: 14px;
@@ -696,9 +723,11 @@ color: #ffffffff;
 }
 .contact .contact-info-item p{
     font-size: 16px;
-    line-height: 2px;
+    line-height: 1.4;
     color: var(--text-black-700);
     font-weight: 400;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
  .contact .contact-form{
     flex: 0 0 100%;
@@ -766,6 +795,9 @@ color: #ffffffff;
     .home .home-img{
         display: none;
     }
+    .section{
+        padding: 0 20px;
+    }
 }
 
 @media (max-width:767px) {
@@ -779,5 +811,78 @@ color: #ffffffff;
     .about .about-content .personal-info{
         flex: 0 0 100%;
         max-width: 100%;
-     }    
+     }
+    .about .about-content .personal-info .info-item{
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .section-title h2{
+        font-size: 30px;
+    }
+    h3.hello{
+        font-size: 22px;
+        margin: 10px 0;
+    }
+    h3.hello span{
+        font-size: 26px;
+    }
+    h3.my-profession{
+        font-size: 22px;
+        margin: 10px 0;
+    }
+    .home-info p{
+        margin-left: 0;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+    .btn{
+        font-size: 15px;
+        padding: 10px 24px;
+    }
+    .about .about-content .personal-info .buttons .btn{
+        margin-right: 10px;
+    }
+    .about .about-content .timeline{
+        padding: 25px 12px;
+    }
+    .about .about-content .timeline-text{
+        text-align: left;
+    }
+}
+
+@media (max-width:575px) {
+    .section{
+        padding: 0 12px;
+    }
+    .home{
+        min-height: auto;
+        padding: 40px 0;
+    }
+    .section-title h2{
+        font-size: 24px;
+    }
+    .about .about-content .about-text{
+        font-size: 18px;
+    }
+    .about .about-content .about-text p,
+    .home-info p{
+        font-size: 15px;
+        line-height: 22px;
+    }
+    .contact .contact-info-item{
+        margin-bottom: 30px;
+    }
+    .about .about-content .personal-info .buttons .btn{
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+        margin-bottom: 12px;
+    }
+    .home-info .btn{
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 10px 0 0 !important;
+    }
 }
