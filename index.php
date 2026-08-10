@@ -36,6 +36,7 @@ $router->post('/dashboard/template', [DashboardController::class, 'updateTemplat
 $router->post('/dashboard/photo', [DashboardController::class, 'uploadPhoto']);
 $router->post('/dashboard/resume-upload', [DashboardController::class, 'uploadResume']);
 $router->post('/dashboard/visibility', [DashboardController::class, 'visibility']);
+$router->post('/dashboard/resume-access', [DashboardController::class, 'resumeAccess']);
 
 // ----- Public portfolio -----
 $router->get('/p/{slug}', [PortfolioController::class, 'show']);

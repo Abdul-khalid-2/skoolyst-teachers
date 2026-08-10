@@ -151,4 +151,16 @@ class DashboardController extends Controller
         Helpers::flash('success', $isPublic ? 'Your portfolio is now public.' : 'Your portfolio is now hidden from the directory.');
         $this->redirect('/dashboard?tab=settings');
     }
+
+    public function resumeAccess(): void
+    {
+        $user = $this->requireAuth();
+        $this->verifyCsrf();
+        $access = $this->input('resume_access') === 'login_required' ? 'login_required' : 'everyone';
+        Teacher::updateProfile($user['id'], ['resume_access' => $access]);
+        Helpers::flash('success', $access === 'login_required'
+            ? 'Only logged-in teachers can now download your resume.'
+            : 'Your resume can now be downloaded by everyone.');
+        $this->redirect('/dashboard?tab=settings');
+    }
 }

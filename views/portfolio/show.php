@@ -76,6 +76,9 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
         .contact .contact-info-item .login-to-contact a { color:var(--skin-color); font-weight:600; text-decoration:underline; }
         .about .about-content .personal-info .info-item p span a.js-call-log { color:var(--skin-color); }
         .about .about-content .personal-info .info-item p .fa-lock { color:var(--text-black-700); font-size:13px; }
+        .link-btn { background:none; border:none; padding:0; color:var(--skin-color); font-weight:600; font-size:16px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:underline; }
+        .link-btn:disabled { opacity:.6; cursor:default; }
+        .call-me-link:disabled { opacity:.7; cursor:default; }
     </style>
     <title><?= Helpers::e($title) ?></title>
 </head>
@@ -135,7 +138,10 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                         <h3 class="my-profession">I'm a <span class="typing" data-typed-strings="<?= Helpers::e(implode('|', $typedStrings)) ?>"><?= Helpers::e($typedStrings[0]) ?></span></h3>
                         <p><?= nl2br(Helpers::e(Helpers::strimwidth($teacher['bio'], 260, '...'))) ?></p>
                         <a href="#contact" class="btn hire-me">Contact Me</a>
-                        <a href="<?= Helpers::url('/p/' . $teacher['slug'] . '/resume') ?>" class="btn" style="margin-left:10px;"><i class="fa fa-download"></i> Download Resume</a>
+                        <a href="<?= Helpers::url('/p/' . $teacher['slug'] . '/resume') ?>" class="btn" style="margin-left:10px;">
+                            <i class="fa fa-download"></i> Download Resume
+                            <?php if (($teacher['resume_access'] ?? 'everyone') === 'login_required' && !Auth::check()): ?><i class="fa fa-lock" style="margin-left:6px;" title="Login required"></i><?php endif; ?>
+                        </a>
                     </div>
                     <div class="home-img padd-15">
                         <img src="<?= $photo ?>" alt="<?= Helpers::e($teacher['full_name']) ?>">
@@ -166,7 +172,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                     <?php if ($teacher['email']): ?><div class="info-item padd-15"><p>Email : <span><?= Helpers::e($teacher['email']) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['phone']): ?>
                                         <?php if (Auth::check()): ?>
-                                            <div class="info-item padd-15"><p>Phone : <span><a href="tel:<?= Helpers::e($teacher['phone']) ?>" class="js-call-log"><?= Helpers::e($teacher['phone']) ?></a></span></p></div>
+                                            <div class="info-item padd-15"><p>Phone : <span><button type="button" class="js-call-log link-btn" data-slug="<?= Helpers::e($teacher['slug']) ?>"><i class="fa fa-phone"></i> Reveal &amp; Call</button></span></p></div>
                                         <?php else: ?>
                                             <div class="info-item padd-15"><p>Phone : <span><i class="fa fa-lock" aria-hidden="true"></i> <a href="<?= Helpers::url('/login') ?>">Login to view</a></span></p></div>
                                         <?php endif; ?>
@@ -178,7 +184,10 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                 </div>
                                 <div class="row">
                                     <div class="buttons padd-15">
-                                        <a href="<?= Helpers::url('/p/' . $teacher['slug'] . '/resume') ?>" class="btn">Download Resume</a>
+                                        <a href="<?= Helpers::url('/p/' . $teacher['slug'] . '/resume') ?>" class="btn">
+                                            Download Resume
+                                            <?php if (($teacher['resume_access'] ?? 'everyone') === 'login_required' && !Auth::check()): ?><i class="fa fa-lock" style="margin-left:6px;" title="Login required"></i><?php endif; ?>
+                                        </a>
                                         <a href="#contact" class="btn hire-me">Contact</a>
                                     </div>
                                 </div>
@@ -348,7 +357,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                         <div class="icon"><i class="fa fa-phone"></i></div>
                         <h4>Call</h4>
                         <?php if (Auth::check()): ?>
-                            <p><a href="tel:<?= Helpers::e($teacher['phone']) ?>" class="js-call-log call-me-link"><i class="fa fa-phone"></i> Call Me Now</a></p>
+                            <p><button type="button" class="js-call-log call-me-link" data-slug="<?= Helpers::e($teacher['slug']) ?>"><i class="fa fa-phone"></i> Call Me Now</button></p>
                         <?php else: ?>
                             <p class="login-to-contact">Login first to contact<br><a href="<?= Helpers::url('/login') ?>">Login now</a></p>
                         <?php endif; ?>
@@ -409,24 +418,39 @@ document.addEventListener('DOMContentLoaded', function () {
         l.addEventListener('click', function () { mobileDropdown.classList.remove('active'); });
     });
 
-    // Log "Call Me" clicks (logged-in users only - these links only render
-    // when logged in) for the teacher's contact history. Fire-and-forget:
-    // the tel: link is a real href, so the phone call itself never waits
-    // on, or gets blocked by, this network request.
+    // The phone number is NEVER present in the page HTML (not even for
+    // logged-in users) so it can't be read via view-source or inspect
+    // element. Clicking "Call Me" asks the controller for it directly;
+    // the response also logs who called this teacher, for their contact
+    // history. Only once the server hands back the real number do we
+    // dial it with a tel: navigation.
     var callLogUrl = <?= json_encode(Helpers::url('/p/' . $teacher['slug'] . '/call')) ?>;
     var csrfToken = document.querySelector('meta[name="csrf-token"]');
     csrfToken = csrfToken ? csrfToken.getAttribute('content') : '';
-    document.querySelectorAll('.js-call-log').forEach(function (link) {
-        link.addEventListener('click', function () {
-            try {
-                var fd = new FormData();
-                fd.append('_csrf', csrfToken);
-                if (navigator.sendBeacon) {
-                    navigator.sendBeacon(callLogUrl, fd);
-                } else {
-                    fetch(callLogUrl, { method: 'POST', body: fd, keepalive: true }).catch(function () {});
-                }
-            } catch (e) { /* never block the actual phone call over a logging error */ }
+    document.querySelectorAll('.js-call-log').forEach(function (btn) {
+        var originalHtml = btn.innerHTML;
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Connecting...';
+            var fd = new FormData();
+            fd.append('_csrf', csrfToken);
+            fetch(callLogUrl, { method: 'POST', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success && data.phone) {
+                        window.location.href = 'tel:' + data.phone;
+                        btn.innerHTML = '<i class="fa fa-phone"></i> ' + data.phone;
+                    } else {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                        alert(data.message || 'Unable to place the call right now. Please try again.');
+                    }
+                })
+                .catch(function () {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    alert('Unable to place the call right now. Please try again.');
+                });
         });
     });
 });

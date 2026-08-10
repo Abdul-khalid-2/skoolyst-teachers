@@ -43,6 +43,18 @@ class PortfolioController extends Controller
             return;
         }
 
+        $isOwner = Auth::check() && Auth::id() == $teacher['id'];
+
+        // Teacher-controlled: resume can be public, or restricted to logged-in teachers.
+        $requiresLogin = ($teacher['resume_access'] ?? 'everyone') === 'login_required';
+        if ($requiresLogin && !Auth::check() && !$isOwner) {
+            View::render('portfolio/resume-locked', [
+                'title'   => 'Login required — ' . $teacher['full_name'],
+                'teacher' => $teacher,
+            ]);
+            return;
+        }
+
         // If teacher uploaded their own PDF resume, serve that file directly
         if (!empty($teacher['resume_file'])) {
             $path = ASSETS_PATH . '/' . $teacher['resume_file'];
@@ -63,11 +75,13 @@ class PortfolioController extends Controller
     }
 
     /**
-     * Phone numbers are hidden from anonymous visitors. A logged-in user
-     * clicking "Call Me" triggers this (async, fire-and-forget) so the
-     * teacher can see a history of who tried to contact them by phone.
-     * The tel: link itself works client-side regardless of this call
-     * succeeding, so a network hiccup never blocks the actual phone call.
+     * Phone numbers are never rendered into the page HTML - not even for
+     * logged-in users - so they can't be read via "view source" or
+     * inspect element. The number only ever lives here, in the
+     * controller, and is handed to the browser in an authenticated
+     * on-click response, which also logs who called whom for the
+     * teacher's contact history. The tel: navigation happens client-side
+     * once the number arrives.
      */
     public function logCall(string $slug): void
     {
@@ -82,7 +96,7 @@ class PortfolioController extends Controller
         }
 
         $teacher = Teacher::findBySlug($slug);
-        if (!$teacher || $teacher['role'] !== 'teacher') {
+        if (!$teacher || $teacher['role'] !== 'teacher' || empty($teacher['phone'])) {
             $this->json(['success' => false, 'message' => 'Teacher not found.'], 404);
             return;
         }
@@ -93,6 +107,6 @@ class PortfolioController extends Controller
             ContactCall::log((int) $teacher['id'], (int) $callerId);
         }
 
-        $this->json(['success' => true]);
+        $this->json(['success' => true, 'phone' => $teacher['phone']]);
     }
 }

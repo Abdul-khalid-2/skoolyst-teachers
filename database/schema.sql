@@ -43,6 +43,7 @@ CREATE TABLE `teachers` (
     `profile_photo`      VARCHAR(255)  NULL,
     `cover_photo`        VARCHAR(255)  NULL,
     `resume_file`        VARCHAR(255)  NULL COMMENT 'Optional uploaded PDF; otherwise resume is generated dynamically',
+    `resume_access`      ENUM('everyone','login_required') NOT NULL DEFAULT 'everyone' COMMENT 'Teacher-controlled: who can download the resume/CV',
 
     -- Flexible JSON sections (arrays of objects) - schemaless & scalable per-teacher
     `educations`         JSON          NULL,
