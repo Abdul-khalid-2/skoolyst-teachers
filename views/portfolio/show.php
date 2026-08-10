@@ -179,7 +179,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                     <?php endif; ?>
                                     <?php if ($teacher['city']): ?><div class="info-item padd-15"><p>City : <span><?= Helpers::e($teacher['city']) . ($teacher['country'] ? ', ' . Helpers::e($teacher['country']) : '') ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['years_experience']): ?><div class="info-item padd-15"><p>Experience : <span><?= (int)$teacher['years_experience'] ?> years</span></p></div><?php endif; ?>
-                                    <?php if ($teacher['website']): ?><div class="info-item padd-15"><p>Website : <span><a href="<?= Helpers::e($teacher['website']) ?>" target="_blank"><?= Helpers::e($teacher['website']) ?></a></span></p></div><?php endif; ?>
+                                    <?php if ($teacher['website']): ?><div class="info-item padd-15"><p>Website : <span><a href="<?= Helpers::e($teacher['website']) ?>" target="_blank" rel="noopener noreferrer">Visit My Website <i class="fa fa-external-link-alt" aria-hidden="true"></i></a></span></p></div><?php endif; ?>
                                     <?php if ($teacher['freelance_status']): ?><div class="info-item padd-15"><p>Availability : <span><?= $teacher['freelance_status'] === 'available' ? 'Available' : 'Not Available' ?></span></p></div><?php endif; ?>
                                 </div>
                                 <div class="row">
@@ -272,7 +272,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                         <h4 class="timeline-title"><?= Helpers::e($c['title'] ?? '') ?></h4>
                                         <div class="timeline-text">
                                             <p><?= Helpers::e($c['issuer'] ?? '') ?></p>
-                                            <?php if (!empty($c['credential_url'])): ?><p><a href="<?= Helpers::e($c['credential_url']) ?>" target="_blank">View Credential</a></p><?php endif; ?>
+                                            <?php if (!empty($c['credential_url'])): ?><p><a href="<?= Helpers::e($c['credential_url']) ?>" target="_blank" rel="noopener noreferrer">View Credential</a></p><?php endif; ?>
                                         </div>
                                     </div>
                                     <?php endforeach; ?>
@@ -368,7 +368,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                     <?php endif; ?>
                     <div class="contact-info-item padd-15"><div class="icon"><i class="fa fa-envelope"></i></div><h4>Email</h4><p><?= Helpers::e($teacher['email']) ?></p></div>
                     <?php if ($social): foreach ($social as $sl): ?>
-                    <div class="contact-info-item padd-15"><div class="icon"><i class="fa fa-share-nodes"></i></div><h4><?= Helpers::e($sl['platform'] ?? 'Link') ?></h4><p><a href="<?= Helpers::e($sl['url'] ?? '#') ?>" target="_blank">Visit</a></p></div>
+                    <div class="contact-info-item padd-15"><div class="icon"><i class="fa fa-share-nodes"></i></div><h4><?= Helpers::e($sl['platform'] ?? 'Link') ?></h4><p><a href="<?= Helpers::e($sl['url'] ?? '#') ?>" target="_blank" rel="noopener noreferrer">Visit</a></p></div>
                     <?php endforeach; endif; ?>
                 </div>
             </div>

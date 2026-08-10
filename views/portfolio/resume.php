@@ -100,9 +100,9 @@ body { font-family:'Inter',sans-serif; background:#eef0f4; color:var(--dark); pa
                 <span><i class="fa fa-envelope"></i><?= Helpers::e($teacher['email']) ?></span>
                 <?php if ($teacher['city']): ?><span><i class="fa fa-map-marker-alt"></i><?= Helpers::e($teacher['city']) ?></span><?php endif; ?>
                 <?php foreach ($social as $sl): if (empty($sl['url'])) continue; ?>
-                    <a href="<?= Helpers::e($sl['url']) ?>" target="_blank"><i class="fa fa-link"></i><?= Helpers::e($sl['platform'] ?? 'Link') ?></a>
+                    <a href="<?= Helpers::e($sl['url']) ?>" target="_blank" rel="noopener noreferrer"><i class="fa fa-link"></i><?= Helpers::e($sl['platform'] ?? 'Link') ?></a>
                 <?php endforeach; ?>
-                <?php if ($teacher['website']): ?><a href="<?= Helpers::e($teacher['website']) ?>" target="_blank"><i class="fa fa-globe"></i><?= Helpers::e($teacher['website']) ?></a><?php endif; ?>
+                <?php if ($teacher['website']): ?><a href="<?= Helpers::e($teacher['website']) ?>" target="_blank" rel="noopener noreferrer"><i class="fa fa-globe"></i>Website</a><?php endif; ?>
             </div>
         </div>
     </div>
