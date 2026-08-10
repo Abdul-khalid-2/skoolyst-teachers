@@ -18,6 +18,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Helpers::e($title) ?></title>
     <meta name="description" content="<?= Helpers::e($teacher['profession_title'] ?: 'Teacher') ?> — <?= Helpers::e(Helpers::strimwidth($teacher['bio'], 140)) ?>">
+    <meta name="csrf-token" content="<?= Helpers::csrfToken() ?>">
 
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-1.css') ?>">
     <link rel="stylesheet" href="<?= Helpers::asset('css/style.css') ?>">
@@ -69,6 +70,12 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
             .share-floating { bottom:14px; right:14px; }
             .share-floating a, .share-floating button { padding:10px 14px; font-size:12px; }
         }
+        .contact .contact-info-item .call-me-link { display:inline-flex; align-items:center; gap:8px; background:var(--skin-color); color:#fff; padding:9px 18px; border-radius:24px; font-weight:600; font-size:14px; text-decoration:none; }
+        .contact .contact-info-item .call-me-link:hover { opacity:.9; }
+        .contact .contact-info-item .login-to-contact { font-size:14px; line-height:1.5; }
+        .contact .contact-info-item .login-to-contact a { color:var(--skin-color); font-weight:600; text-decoration:underline; }
+        .about .about-content .personal-info .info-item p span a.js-call-log { color:var(--skin-color); }
+        .about .about-content .personal-info .info-item p .fa-lock { color:var(--text-black-700); font-size:13px; }
     </style>
     <title><?= Helpers::e($title) ?></title>
 </head>
@@ -157,7 +164,13 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                     <?php if ($teacher['qualification']): ?><div class="info-item padd-15"><p>Qualification : <span><?= Helpers::e($teacher['qualification']) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['subject']): ?><div class="info-item padd-15"><p>Subject : <span><?= Helpers::e($teacher['subject']) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['email']): ?><div class="info-item padd-15"><p>Email : <span><?= Helpers::e($teacher['email']) ?></span></p></div><?php endif; ?>
-                                    <?php if ($teacher['phone']): ?><div class="info-item padd-15"><p>Phone : <span><?= Helpers::e($teacher['phone']) ?></span></p></div><?php endif; ?>
+                                    <?php if ($teacher['phone']): ?>
+                                        <?php if (Auth::check()): ?>
+                                            <div class="info-item padd-15"><p>Phone : <span><a href="tel:<?= Helpers::e($teacher['phone']) ?>" class="js-call-log"><?= Helpers::e($teacher['phone']) ?></a></span></p></div>
+                                        <?php else: ?>
+                                            <div class="info-item padd-15"><p>Phone : <span><i class="fa fa-lock" aria-hidden="true"></i> <a href="<?= Helpers::url('/login') ?>">Login to view</a></span></p></div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                     <?php if ($teacher['city']): ?><div class="info-item padd-15"><p>City : <span><?= Helpers::e($teacher['city']) . ($teacher['country'] ? ', ' . Helpers::e($teacher['country']) : '') ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['years_experience']): ?><div class="info-item padd-15"><p>Experience : <span><?= (int)$teacher['years_experience'] ?> years</span></p></div><?php endif; ?>
                                     <?php if ($teacher['website']): ?><div class="info-item padd-15"><p>Website : <span><a href="<?= Helpers::e($teacher['website']) ?>" target="_blank"><?= Helpers::e($teacher['website']) ?></a></span></p></div><?php endif; ?>
@@ -331,7 +344,15 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                 <div class="row"><div class="section-title padd-15"><h2>Contact</h2></div></div>
                 <div class="row">
                     <?php if ($teacher['phone']): ?>
-                    <div class="contact-info-item padd-15"><div class="icon"><i class="fa fa-phone"></i></div><h4>Call</h4><p><?= Helpers::e($teacher['phone']) ?></p></div>
+                    <div class="contact-info-item padd-15">
+                        <div class="icon"><i class="fa fa-phone"></i></div>
+                        <h4>Call</h4>
+                        <?php if (Auth::check()): ?>
+                            <p><a href="tel:<?= Helpers::e($teacher['phone']) ?>" class="js-call-log call-me-link"><i class="fa fa-phone"></i> Call Me Now</a></p>
+                        <?php else: ?>
+                            <p class="login-to-contact">Login first to contact<br><a href="<?= Helpers::url('/login') ?>">Login now</a></p>
+                        <?php endif; ?>
+                    </div>
                     <?php endif; ?>
                     <?php if ($teacher['city']): ?>
                     <div class="contact-info-item padd-15"><div class="icon"><i class="fa fa-map-marker-alt"></i></div><h4>Location</h4><p><?= Helpers::e($teacher['city']) ?></p></div>
@@ -386,6 +407,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     document.querySelectorAll('.mobile-nav-links a').forEach(function (l) {
         l.addEventListener('click', function () { mobileDropdown.classList.remove('active'); });
+    });
+
+    // Log "Call Me" clicks (logged-in users only - these links only render
+    // when logged in) for the teacher's contact history. Fire-and-forget:
+    // the tel: link is a real href, so the phone call itself never waits
+    // on, or gets blocked by, this network request.
+    var callLogUrl = <?= json_encode(Helpers::url('/p/' . $teacher['slug'] . '/call')) ?>;
+    var csrfToken = document.querySelector('meta[name="csrf-token"]');
+    csrfToken = csrfToken ? csrfToken.getAttribute('content') : '';
+    document.querySelectorAll('.js-call-log').forEach(function (link) {
+        link.addEventListener('click', function () {
+            try {
+                var fd = new FormData();
+                fd.append('_csrf', csrfToken);
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(callLogUrl, fd);
+                } else {
+                    fetch(callLogUrl, { method: 'POST', body: fd, keepalive: true }).catch(function () {});
+                }
+            } catch (e) { /* never block the actual phone call over a logging error */ }
+        });
     });
 });
 </script>

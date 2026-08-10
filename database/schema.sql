@@ -92,3 +92,22 @@ VALUES
      '$2y$10$iL8RbkHIQqQBefN3.EDuNe4hwed/SOy4emhs2MMkKTZ0X5ljJ8fQO',
      'admin@skoolyst.com', 'active', 0,
      'Skoolyst Admin', NOW(), NOW());
+
+-- =====================================================================
+-- contact_calls
+-- Phone numbers are only revealed to logged-in users. Every time a
+-- logged-in user taps "Call Me" on a portfolio, we log who called whom
+-- and when, for the teacher's contact history.
+-- =====================================================================
+CREATE TABLE `contact_calls` (
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `teacher_id`    BIGINT UNSIGNED NOT NULL COMMENT 'The teacher who was called (owner of the portfolio)',
+    `caller_id`     BIGINT UNSIGNED NOT NULL COMMENT 'The logged-in user who clicked Call Me',
+    `created_at`    DATETIME        NOT NULL,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_contact_calls_teacher` (`teacher_id`, `created_at`),
+    KEY `idx_contact_calls_caller` (`caller_id`, `created_at`),
+    CONSTRAINT `fk_contact_calls_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_contact_calls_caller` FOREIGN KEY (`caller_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

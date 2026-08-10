@@ -61,4 +61,38 @@ class PortfolioController extends Controller
             'teacher' => $teacher,
         ]);
     }
+
+    /**
+     * Phone numbers are hidden from anonymous visitors. A logged-in user
+     * clicking "Call Me" triggers this (async, fire-and-forget) so the
+     * teacher can see a history of who tried to contact them by phone.
+     * The tel: link itself works client-side regardless of this call
+     * succeeding, so a network hiccup never blocks the actual phone call.
+     */
+    public function logCall(string $slug): void
+    {
+        if (!Auth::check()) {
+            $this->json(['success' => false, 'message' => 'Login required to contact by phone.'], 401);
+            return;
+        }
+
+        if (!Helpers::checkCsrf($this->input('_csrf'))) {
+            $this->json(['success' => false, 'message' => 'Invalid or expired session.'], 419);
+            return;
+        }
+
+        $teacher = Teacher::findBySlug($slug);
+        if (!$teacher || $teacher['role'] !== 'teacher') {
+            $this->json(['success' => false, 'message' => 'Teacher not found.'], 404);
+            return;
+        }
+
+        $callerId = Auth::id();
+        // Don't log an owner "calling" their own portfolio while previewing it.
+        if ((int) $teacher['id'] !== (int) $callerId) {
+            ContactCall::log((int) $teacher['id'], (int) $callerId);
+        }
+
+        $this->json(['success' => true]);
+    }
 }

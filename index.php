@@ -40,6 +40,7 @@ $router->post('/dashboard/visibility', [DashboardController::class, 'visibility'
 // ----- Public portfolio -----
 $router->get('/p/{slug}', [PortfolioController::class, 'show']);
 $router->get('/p/{slug}/resume', [PortfolioController::class, 'resume']);
+$router->post('/p/{slug}/call', [PortfolioController::class, 'logCall']);
 
 // ----- Super admin -----
 $router->get('/admin', [AdminController::class, 'dashboard']);
