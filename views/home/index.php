@@ -1,20 +1,41 @@
 <?php View::partial('layouts/header', ['title' => $title]); ?>
 
 <section class="hero">
-    <div class="container">
-        <h1>Build a professional portfolio educational institutions actually notice.</h1>
-        <p>Skoolyst Teachers helps School, College, University, Technical, Medical, Science, Arts and Computer Science educators create a beautiful online portfolio in minutes — then share one link with recruiters, schools, or students.</p>
-        <div class="hero-actions">
-            <a href="<?= Helpers::url('/register') ?>" class="btn btn-light">Create Your Free Portfolio</a>
-            <a href="#directory" class="btn btn-outline-light">Browse Teachers</a>
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <h1>Build a professional portfolio educational institutions actually notice.</h1>
+            <p>Skoolyst Teachers helps School, College, University, Technical, Medical, Science, Arts and Computer Science educators create a beautiful online portfolio in minutes — then share one link with recruiters, schools, or students.</p>
+            <div class="hero-actions">
+                <a href="<?= Helpers::url('/register') ?>" class="btn btn-light">Create Your Free Portfolio</a>
+                <a href="#directory" class="btn btn-outline-light">Browse Teachers</a>
+            </div>
+            <div class="hero-stats">
+                <div><strong><?= (int) $pagination['total'] ?></strong><span>Teachers Registered</span></div>
+                <div><strong>100% Free</strong><span>Default Template</span></div>
+                <div><strong>1 Click</strong><span>Shareable Portfolio Link</span></div>
+            </div>
         </div>
-        <div class="hero-stats">
-            <div><strong><?= (int) $pagination['total'] ?></strong><span>Teachers Registered</span></div>
-            <div><strong>100% Free</strong><span>Default Template</span></div>
-            <div><strong>1 Click</strong><span>Shareable Portfolio Link</span></div>
+
+        <div class="hero-media">
+            <button type="button" class="video-thumb" id="heroVideoTrigger" data-video-id="0tp_ng9HVR4" aria-haspopup="dialog" aria-controls="heroVideoModal" aria-label="Play intro video">
+                <img src="<?= Helpers::asset('image/thumnal.png') ?>" alt="Skoolyst Teachers intro video thumbnail" loading="lazy">
+                <span class="video-thumb-play" aria-hidden="true">
+                    <i class="fa fa-play"></i>
+                </span>
+            </button>
         </div>
     </div>
 </section>
+
+<div class="video-modal" id="heroVideoModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Intro video">
+    <div class="video-modal-backdrop" data-video-close></div>
+    <div class="video-modal-dialog">
+        <button type="button" class="video-modal-close" data-video-close aria-label="Close video">
+            <i class="fa fa-xmark"></i>
+        </button>
+        <div class="video-modal-frame" id="heroVideoFrame"></div>
+    </div>
+</div>
 
 <div class="container" id="directory">
     <form class="filter-bar" method="get" action="<?= Helpers::url('/') ?>#directory">

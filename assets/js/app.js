@@ -108,4 +108,44 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = container.closest('form');
         if (form) form.addEventListener('submit', syncHidden);
     }
+
+    // ===== Hero video modal =====
+    var videoTrigger = document.getElementById('heroVideoTrigger');
+    var videoModal = document.getElementById('heroVideoModal');
+    if (videoTrigger && videoModal) {
+        var videoFrame = document.getElementById('heroVideoFrame');
+        var lastFocused = null;
+
+        function openVideoModal() {
+            var videoId = videoTrigger.getAttribute('data-video-id');
+            videoFrame.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId +
+                '?autoplay=1&rel=0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+            lastFocused = document.activeElement;
+            videoModal.classList.add('is-open');
+            videoModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            var closeBtn = videoModal.querySelector('.video-modal-close');
+            if (closeBtn) closeBtn.focus();
+        }
+
+        function closeVideoModal() {
+            videoModal.classList.remove('is-open');
+            videoModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            videoFrame.innerHTML = ''; // stop playback
+            if (lastFocused) lastFocused.focus();
+        }
+
+        videoTrigger.addEventListener('click', openVideoModal);
+
+        videoModal.querySelectorAll('[data-video-close]').forEach(function (el) {
+            el.addEventListener('click', closeVideoModal);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && videoModal.classList.contains('is-open')) {
+                closeVideoModal();
+            }
+        });
+    }
 });
