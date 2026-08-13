@@ -130,6 +130,7 @@ img { max-width: 100%; display: block; }
 @media (max-width: 900px) {
     .hero { padding: 50px 0 40px; }
     .hero-grid { flex-direction: column; align-items: stretch; gap: 28px; }
+    .hero-copy, .hero-media { flex: 0 0 auto; width: 100%; } /* reset desktop flex-basis so it isn't read as a min-height in column mode */
     .hero-media { order: -1; }
     .hero h1 { font-size: 30px; }
     .hero p { font-size: 15px; max-width: 100%; }
