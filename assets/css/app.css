@@ -164,14 +164,29 @@ img { max-width: 100%; display: block; }
     .video-thumb-play { width: 50px; height: 50px; font-size: 16px; }
     .video-thumb-play::after { inset: -10px; }
 }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-light); }
-.btn-light { background: #fff; color: var(--primary); }
-.btn-light:hover { background: #eef3f8; }
-.btn-outline-light { border: 1px solid rgba(255,255,255,.5); color: #fff; }
-.btn-outline-light:hover { background: rgba(255,255,255,.1); }
+.btn {
+    display: inline-block; padding: 12px 26px; border-radius: 8px; font-weight: 600; font-size: 14.5px;
+    cursor: pointer; border: none; position: relative;
+    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
+}
+.btn:active { transform: translateY(1px) scale(.98); }
+.btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(10,45,82,.22); }
+.btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 10px 22px rgba(10,45,82,.32); }
+.btn-primary:active { transform: translateY(0) scale(.98); box-shadow: 0 4px 12px rgba(10,45,82,.28); }
+
+.btn-light { background: #fff; color: var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+.btn-light:hover { background: #eef3f8; transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+.btn-light:active { transform: translateY(0) scale(.98); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+.btn-outline-light { border: 1px solid rgba(255,255,255,.5); color: #fff; background: transparent; }
+.btn-outline-light:hover { background: rgba(255,255,255,.12); border-color: #fff; transform: translateY(-2px); }
+.btn-outline-light:active { transform: translateY(0) scale(.98); }
+
 .btn-sm { padding: 8px 16px; font-size: 13px; }
 .btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #bf3a3a; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(214,69,69,.3); }
 .btn-block { display: block; width: 100%; text-align: center; }
 
 /* ===== Section ===== */
