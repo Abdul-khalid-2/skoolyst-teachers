@@ -89,7 +89,18 @@ class Helpers
 
     public static function asset(string $path): string
     {
-        return ASSETS_URL . '/' . ltrim($path, '/');
+        $path = ltrim($path, '/');
+        $url = ASSETS_URL . '/' . $path;
+
+        // Cache-bust with the file's last-modified time so browsers/CDNs
+        // fetch the new version automatically after every deploy, instead
+        // of silently serving a stale cached css/js/image file.
+        $fullPath = ASSETS_PATH . '/' . $path;
+        if (is_file($fullPath)) {
+            $url .= '?v=' . filemtime($fullPath);
+        }
+
+        return $url;
     }
 
     public static function url(string $path = ''): string
