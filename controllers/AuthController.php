@@ -43,6 +43,10 @@ class AuthController extends Controller
 
         $user = Teacher::find($id);
         Auth::login($user);
+
+        // Best-effort: don't let a slow/broken SMTP connection block registration.
+        Notifications::sendWelcomeEmail($user);
+
         Helpers::flash('success', 'Welcome! Let\'s build your portfolio — fill in your details below.');
         $this->redirect('/dashboard');
     }

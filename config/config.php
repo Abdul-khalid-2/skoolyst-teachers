@@ -59,6 +59,18 @@ define('MAX_RESUME_SIZE', 5 * 1024 * 1024);           // 5MB
 define('ALLOWED_PHOTO_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
 define('ALLOWED_RESUME_TYPES', ['application/pdf']);
 
+// ----- Mail (SMTP) -----
+// Fill these in per environment. Never commit real credentials — set them
+// directly on the server (or via a local, gitignored override file) instead
+// of pushing them in this file.
+define('MAIL_HOST', 'smtp.gmail.com');
+define('MAIL_PORT', 587);
+define('MAIL_ENCRYPTION', 'tls');           // 'tls' | 'ssl'
+define('MAIL_USERNAME', '');                // SMTP auth username
+define('MAIL_PASSWORD', '');                // SMTP auth password / app password
+define('MAIL_FROM_ADDRESS', 'no-reply@skoolyst.com');
+define('MAIL_FROM_NAME', 'Skoolyst Teachers');
+
 // ----- Error reporting -----
 if (APP_DEBUG) {
     error_reporting(E_ALL);
