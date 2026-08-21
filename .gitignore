@@ -1,0 +1,21 @@
+# Secrets — never commit real credentials
+.env
+.env.*
+!.env.example
+
+# User-uploaded content — real teachers' photos/resumes shouldn't live in
+# a public repo. Folder structure is preserved via .gitkeep.
+/assets/uploads/profile/*
+!/assets/uploads/profile/.gitkeep
+/assets/uploads/resume/*
+!/assets/uploads/resume/.gitkeep
+
+# Local-only / leftover directories
+/old-application/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

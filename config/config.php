@@ -1,21 +1,28 @@
 <?php
 /**
  * Global application configuration.
- * Copy this file's values to match your hosting environment.
+ *
+ * This file itself is safe to commit — it contains no secrets. Real,
+ * per-environment values (DB credentials, SMTP credentials) live in a
+ * ".env" file at the project root, which is gitignored and never pushed.
+ * Copy .env.example to .env and fill in your real values there.
  */
 
+require __DIR__ . '/../core/Env.php';
+Env::load(dirname(__DIR__) . '/.env');
+
 // ----- Environment -----
-define('APP_ENV', 'production');      // 'local' | 'production'
-define('APP_DEBUG', false);          // true shows PHP errors, keep false in production
+define('APP_ENV', Env::get('APP_ENV', 'production'));   // 'local' | 'production'
+define('APP_DEBUG', Env::get('APP_DEBUG', false));       // true shows PHP errors, keep false in production
 
 // ----- Base URL -----
 // Leave $FORCE_BASE_URL as null to auto-detect (recommended — this makes the
 // app work whether it's installed at your domain root in production, or
 // inside a subfolder on localhost, e.g.
 // http://localhost/projects/teacher-portfolio/).
-// Only set $FORCE_BASE_URL if auto-detection is wrong for your setup
+// Only set FORCE_BASE_URL in .env if auto-detection is wrong for your setup
 // (e.g. behind a reverse proxy/CDN that rewrites the host).
-$FORCE_BASE_URL = null; // e.g. 'https://teachers.skoolyst.com'
+$FORCE_BASE_URL = Env::get('FORCE_BASE_URL', null); // e.g. 'https://teachers.skoolyst.com'
 
 if ($FORCE_BASE_URL) {
     define('BASE_URL', rtrim($FORCE_BASE_URL, '/'));
@@ -36,11 +43,11 @@ if ($FORCE_BASE_URL) {
 define('BASE_PATH', (string) parse_url(BASE_URL, PHP_URL_PATH));
 
 // ----- Database -----
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'skoolyst_teachers');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_CHARSET', 'utf8mb4');
+define('DB_HOST', Env::get('DB_HOST', 'localhost'));
+define('DB_NAME', Env::get('DB_NAME', 'skoolyst_teachers'));
+define('DB_USER', Env::get('DB_USER', 'root'));
+define('DB_PASS', Env::get('DB_PASS', ''));
+define('DB_CHARSET', Env::get('DB_CHARSET', 'utf8mb4'));
 
 // ----- Paths -----
 define('ROOT_PATH', dirname(__DIR__));
@@ -60,16 +67,13 @@ define('ALLOWED_PHOTO_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
 define('ALLOWED_RESUME_TYPES', ['application/pdf']);
 
 // ----- Mail (SMTP) -----
-// Fill these in per environment. Never commit real credentials — set them
-// directly on the server (or via a local, gitignored override file) instead
-// of pushing them in this file.
-define('MAIL_HOST', 'smtp.gmail.com');
-define('MAIL_PORT', 587);
-define('MAIL_ENCRYPTION', 'tls');           // 'tls' | 'ssl'
-define('MAIL_USERNAME', '');                // SMTP auth username
-define('MAIL_PASSWORD', '');                // SMTP auth password / app password
-define('MAIL_FROM_ADDRESS', 'no-reply@skoolyst.com');
-define('MAIL_FROM_NAME', 'Skoolyst Teachers');
+define('MAIL_HOST', Env::get('MAIL_HOST', 'smtp.gmail.com'));
+define('MAIL_PORT', (int) Env::get('MAIL_PORT', 587));
+define('MAIL_ENCRYPTION', Env::get('MAIL_ENCRYPTION', 'tls'));   // 'tls' | 'ssl'
+define('MAIL_USERNAME', Env::get('MAIL_USERNAME', ''));           // SMTP auth username
+define('MAIL_PASSWORD', Env::get('MAIL_PASSWORD', ''));           // SMTP auth password / app password
+define('MAIL_FROM_ADDRESS', Env::get('MAIL_FROM_ADDRESS', 'no-reply@skoolyst.com'));
+define('MAIL_FROM_NAME', Env::get('MAIL_FROM_NAME', 'Skoolyst Teachers'));
 
 // ----- Error reporting -----
 if (APP_DEBUG) {
