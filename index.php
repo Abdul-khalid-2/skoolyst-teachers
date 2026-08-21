@@ -48,5 +48,7 @@ $router->get('/admin', [AdminController::class, 'dashboard']);
 $router->get('/admin/teachers', [AdminController::class, 'teachers']);
 $router->post('/admin/teachers/{id}/status', [AdminController::class, 'updateStatus']);
 $router->post('/admin/teachers/{id}/delete', [AdminController::class, 'delete']);
+$router->post('/admin/teachers/{id}/send-welcome', [AdminController::class, 'sendWelcomeEmail']);
+$router->post('/admin/teachers/{id}/send-reminder', [AdminController::class, 'sendProfileReminder']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

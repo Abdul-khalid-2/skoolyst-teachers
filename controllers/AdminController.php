@@ -10,10 +10,13 @@ class AdminController extends Controller
         $pending = Teacher::count("role = 'teacher' AND status = 'pending'");
         $inactive = Teacher::count("role = 'teacher' AND status = 'inactive'");
 
+        $page = max(1, (int) $this->input('page', 1));
+        $result = Teacher::adminList($page, 5);
+
         View::render('admin/dashboard', [
             'title' => 'Admin Dashboard',
             'stats' => compact('total', 'active', 'pending', 'inactive'),
-            'recent' => Teacher::adminList(1, 5)['data'],
+            'result' => $result,
         ]);
     }
 
@@ -52,6 +55,45 @@ class AdminController extends Controller
         $this->verifyCsrf();
         Teacher::delete($id);
         Helpers::flash('success', 'Teacher account deleted.');
+        $this->redirect('/admin/teachers');
+    }
+
+    public function sendWelcomeEmail(int $id): void
+    {
+        $this->requireAdmin();
+        $this->verifyCsrf();
+
+        $teacher = Teacher::find($id);
+        if (!$teacher) {
+            Helpers::flash('errors', 'Teacher not found.');
+            $this->redirect('/admin/teachers');
+        }
+
+        $sent = Notifications::sendWelcomeEmail($teacher);
+        Helpers::flash($sent ? 'success' : 'errors', $sent
+            ? 'Welcome email sent to ' . $teacher['email'] . '.'
+            : 'Could not send the welcome email. Check your SMTP settings and try again.');
+
+        $this->redirect('/admin/teachers');
+    }
+
+    public function sendProfileReminder(int $id): void
+    {
+        $this->requireAdmin();
+        $this->verifyCsrf();
+
+        $teacher = Teacher::find($id);
+        if (!$teacher) {
+            Helpers::flash('errors', 'Teacher not found.');
+            $this->redirect('/admin/teachers');
+        }
+
+        $missing = Teacher::missingFields($teacher);
+        $sent = Notifications::sendProfileReminderEmail($teacher, $missing);
+        Helpers::flash($sent ? 'success' : 'errors', $sent
+            ? 'Profile completion reminder sent to ' . $teacher['email'] . '.'
+            : 'Could not send the reminder email. Check your SMTP settings and try again.');
+
         $this->redirect('/admin/teachers');
     }
 }

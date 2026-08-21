@@ -183,4 +183,43 @@ class Teacher extends Model
             'last_page' => (int) max(1, ceil($total / $perPage)),
         ];
     }
+
+    /**
+     * Human-readable labels for the profile sections most worth having filled
+     * in before a profile looks complete. Used to build admin "reminder"
+     * emails and any future "profile completeness" UI.
+     */
+    public const COMPLETENESS_FIELDS = [
+        'profile_photo'   => 'Profile photo',
+        'bio'             => 'Bio / About',
+        'profession_title'=> 'Profession title',
+        'educations'      => 'Education',
+        'experiences'     => 'Experience',
+        'skills'          => 'Skills',
+        'certifications'  => 'Certificates',
+        'awards'          => 'Awards',
+    ];
+
+    /**
+     * Returns the labels of sections that are empty/missing for a teacher.
+     * Expects a full row (e.g. from Teacher::find()), not the trimmed
+     * columns returned by adminList().
+     */
+    public static function missingFields(array $teacher): array
+    {
+        $missing = [];
+        foreach (self::COMPLETENESS_FIELDS as $field => $label) {
+            if (in_array($field, self::JSON_FIELDS, true)) {
+                $decoded = Helpers::jsonDecode($teacher[$field] ?? null);
+                if (empty($decoded)) {
+                    $missing[] = $label;
+                }
+            } else {
+                if (trim((string) ($teacher[$field] ?? '')) === '') {
+                    $missing[] = $label;
+                }
+            }
+        }
+        return $missing;
+    }
 }

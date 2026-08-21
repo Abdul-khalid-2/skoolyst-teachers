@@ -13,11 +13,11 @@
         <div class="stat-card"><strong><?= $stats['inactive'] ?></strong><span>Inactive</span></div>
     </div>
 
-    <div class="table-wrap" style="margin-bottom:26px;">
+    <div class="table-wrap" style="margin-bottom:14px;">
         <table class="app-table">
             <thead><tr><th>Name</th><th>Email</th><th>City</th><th>Status</th><th>Joined</th></tr></thead>
             <tbody>
-            <?php foreach ($recent as $t): ?>
+            <?php foreach ($result['data'] as $t): ?>
                 <tr>
                     <td><a href="<?= Helpers::url('/p/' . $t['slug']) ?>" target="_blank" style="color:var(--primary);font-weight:600;"><?= Helpers::e($t['full_name']) ?></a></td>
                     <td><?= Helpers::e($t['email']) ?></td>
@@ -26,10 +26,18 @@
                     <td><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$recent): ?><tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No teachers registered yet.</td></tr><?php endif; ?>
+            <?php if (!$result['data']): ?><tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No teachers registered yet.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
+
+    <?php if ($result['last_page'] > 1): ?>
+        <div class="pagination" style="margin-bottom:22px;">
+            <?php for ($p = 1; $p <= $result['last_page']; $p++): ?>
+                <a href="<?= Helpers::url('/admin') ?>?page=<?= $p ?>" class="<?= $p == $result['page'] ? 'active' : '' ?>"><?= $p ?></a>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
 
     <a href="<?= Helpers::url('/admin/teachers') ?>" class="btn btn-primary">Manage All Teachers</a>
 </div>

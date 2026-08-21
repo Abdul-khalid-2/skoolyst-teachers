@@ -31,6 +31,14 @@
                             </form>
                             <?php endif; ?>
                         <?php endforeach; ?>
+                        <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-welcome') ?>" style="display:inline-block;margin-right:4px;" onsubmit="return confirm('Send the welcome email to ' + <?= json_encode($t['email']) ?> + '?');">
+                            <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                            <button type="submit" class="btn btn-sm" style="background:#e6f4ea;color:#1e7e34;">Send Welcome Email</button>
+                        </form>
+                        <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-reminder') ?>" style="display:inline-block;margin-right:4px;" onsubmit="return confirm('Send a profile completion reminder to ' + <?= json_encode($t['email']) ?> + '?');">
+                            <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                            <button type="submit" class="btn btn-sm" style="background:#fff7e6;color:#8a6d1a;">Add Missing Details</button>
+                        </form>
                         <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/delete') ?>" style="display:inline-block;" onsubmit="return confirm('Delete this teacher account permanently?');">
                             <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
