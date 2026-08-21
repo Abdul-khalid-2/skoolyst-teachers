@@ -19,11 +19,11 @@
             <tbody>
             <?php foreach ($result['data'] as $t): ?>
                 <tr>
-                    <td><a href="<?= Helpers::url('/p/' . $t['slug']) ?>" target="_blank" style="color:var(--primary);font-weight:600;"><?= Helpers::e($t['full_name']) ?></a></td>
-                    <td><?= Helpers::e($t['email']) ?></td>
-                    <td><?= Helpers::e($t['city']) ?></td>
-                    <td><span class="badge badge-<?= $t['status'] ?>"><?= ucfirst($t['status']) ?></span></td>
-                    <td><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
+                    <td data-label="Name"><a href="<?= Helpers::url('/p/' . $t['slug']) ?>" target="_blank" style="color:var(--primary);font-weight:600;"><?= Helpers::e($t['full_name']) ?></a></td>
+                    <td data-label="Email"><?= Helpers::e($t['email']) ?></td>
+                    <td data-label="City"><?= Helpers::e($t['city']) ?></td>
+                    <td data-label="Status"><span class="badge badge-<?= $t['status'] ?>"><?= ucfirst($t['status']) ?></span></td>
+                    <td data-label="Joined"><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
                 </tr>
             <?php endforeach; ?>
             <?php if (!$result['data']): ?><tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No teachers registered yet.</td></tr><?php endif; ?>

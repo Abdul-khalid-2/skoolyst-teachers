@@ -14,6 +14,25 @@ document.addEventListener('DOMContentLoaded', function () {
         dashToggle.addEventListener('click', function () { dashSidebar.classList.toggle('open'); });
     }
 
+    // ===== Actions dropdown (admin tables) =====
+    document.querySelectorAll('.actions-dropdown-toggle').forEach(function (toggle) {
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var dropdown = toggle.closest('.actions-dropdown');
+            var wasOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+            if (!wasOpen) dropdown.classList.add('open');
+        });
+    });
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+        }
+    });
+
     // Auto-hide flash alerts
     document.querySelectorAll('.alert').forEach(function (el) {
         setTimeout(function () { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; }, 4000);

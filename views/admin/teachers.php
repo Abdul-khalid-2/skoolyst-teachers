@@ -16,33 +16,44 @@
             <tbody>
             <?php foreach ($result['data'] as $t): ?>
                 <tr>
-                    <td><a href="<?= Helpers::url('/p/' . $t['slug']) ?>" target="_blank" style="color:var(--primary);font-weight:600;"><?= Helpers::e($t['full_name']) ?></a></td>
-                    <td><?= Helpers::e($t['email']) ?></td>
-                    <td><?= Helpers::e($t['city']) ?></td>
-                    <td><span class="badge badge-<?= $t['status'] ?>"><?= ucfirst($t['status']) ?></span></td>
-                    <td><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
-                    <td style="white-space:nowrap;">
-                        <?php foreach (['active' => 'Activate', 'inactive' => 'Disable', 'pending' => 'Mark Pending'] as $st => $label): ?>
-                            <?php if ($t['status'] !== $st): ?>
-                            <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/status') ?>" style="display:inline-block;margin-right:4px;">
-                                <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
-                                <input type="hidden" name="status" value="<?= $st ?>">
-                                <button type="submit" class="btn btn-sm" style="background:var(--primary-soft);color:var(--primary);"><?= $label ?></button>
-                            </form>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                        <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-welcome') ?>" style="display:inline-block;margin-right:4px;" onsubmit="return confirm('Send the welcome email to ' + <?= json_encode($t['email']) ?> + '?');">
-                            <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
-                            <button type="submit" class="btn btn-sm" style="background:#e6f4ea;color:#1e7e34;">Send Welcome Email</button>
-                        </form>
-                        <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-reminder') ?>" style="display:inline-block;margin-right:4px;" onsubmit="return confirm('Send a profile completion reminder to ' + <?= json_encode($t['email']) ?> + '?');">
-                            <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
-                            <button type="submit" class="btn btn-sm" style="background:#fff7e6;color:#8a6d1a;">Add Missing Details</button>
-                        </form>
-                        <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/delete') ?>" style="display:inline-block;" onsubmit="return confirm('Delete this teacher account permanently?');">
-                            <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                    <td data-label="Name"><a href="<?= Helpers::url('/p/' . $t['slug']) ?>" target="_blank" style="color:var(--primary);font-weight:600;"><?= Helpers::e($t['full_name']) ?></a></td>
+                    <td data-label="Email"><?= Helpers::e($t['email']) ?></td>
+                    <td data-label="City"><?= Helpers::e($t['city']) ?></td>
+                    <td data-label="Status"><span class="badge badge-<?= $t['status'] ?>"><?= ucfirst($t['status']) ?></span></td>
+                    <td data-label="Joined"><?= date('M j, Y', strtotime($t['created_at'])) ?></td>
+                    <td class="actions-cell">
+                        <div class="actions-dropdown">
+                            <button type="button" class="actions-dropdown-toggle">Actions <span class="caret">&#9662;</span></button>
+                            <div class="actions-dropdown-menu">
+                                <?php foreach (['active' => 'Activate', 'inactive' => 'Disable', 'pending' => 'Mark Pending'] as $st => $label): ?>
+                                    <?php if ($t['status'] !== $st): ?>
+                                    <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/status') ?>">
+                                        <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                                        <input type="hidden" name="status" value="<?= $st ?>">
+                                        <button type="submit"><?= $label ?></button>
+                                    </form>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+
+                                <div class="dropdown-divider"></div>
+
+                                <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-welcome') ?>" onsubmit="return confirm('Send the welcome email to ' + <?= json_encode($t['email']) ?> + '?');">
+                                    <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                                    <button type="submit">Send Welcome Email</button>
+                                </form>
+                                <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/send-reminder') ?>" onsubmit="return confirm('Send a profile completion reminder to ' + <?= json_encode($t['email']) ?> + '?');">
+                                    <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                                    <button type="submit">Add Missing Details</button>
+                                </form>
+
+                                <div class="dropdown-divider"></div>
+
+                                <form method="post" action="<?= Helpers::url('/admin/teachers/' . $t['id'] . '/delete') ?>" onsubmit="return confirm('Delete this teacher account permanently?');">
+                                    <input type="hidden" name="_csrf" value="<?= Helpers::csrfToken() ?>">
+                                    <button type="submit" class="danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
