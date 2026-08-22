@@ -285,6 +285,32 @@ class Teacher extends Model
         ];
     }
 
+    /**
+     * Descriptive image alt text for a teacher's photo/avatar, with the
+     * same safe fallbacks as seoTitle() - never blank, never invented data.
+     */
+    public static function altText(array $teacher): string
+    {
+        $name = trim((string) ($teacher['full_name'] ?? '')) ?: 'Teacher';
+
+        $subjectOrCategory = trim((string) ($teacher['subject'] ?? ''));
+        if ($subjectOrCategory === '') {
+            $subjectOrCategory = self::TEACHER_TYPE_LABELS[$teacher['teacher_type'] ?? ''] ?? '';
+        }
+        $city = trim((string) ($teacher['city'] ?? ''));
+
+        if ($subjectOrCategory !== '' && $city !== '') {
+            return "{$name}, {$subjectOrCategory} in {$city}";
+        }
+        if ($subjectOrCategory !== '') {
+            return "{$name}, {$subjectOrCategory}";
+        }
+        if ($city !== '') {
+            return "{$name}, Teacher in {$city}";
+        }
+        return "{$name}, Teacher Portfolio Photo";
+    }
+
     public static function distinctValues(string $column): array
     {
         $allowed = ['subject', 'city', 'qualification', 'teacher_type'];

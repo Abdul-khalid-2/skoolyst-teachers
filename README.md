@@ -205,4 +205,26 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   containing `</script>`, `&`, or other special characters can't break out
   of the script tag or produce invalid JSON.
 
+**Phase 5 — On-page content and headings.**
+- Homepage `<h1>` is now "Find Qualified Teachers in Pakistan" (was
+  marketing copy aimed at teacher sign-ups); a short intro paragraph and
+  crawlable "Popular subjects / cities / qualifications / categories" link
+  lists (built from the same `$subjects`/`$cities`/`$qualifications`/
+  `Teacher::TEACHER_TYPE_LABELS` data already used by the filter dropdowns)
+  now sit above the filter bar, plus a genuine FAQ section
+  (`<details>/<summary>`) grounded in real platform behavior (free
+  portfolios, filtering, phone-reveal login requirement, the `is_public`
+  privacy toggle) - no invented claims.
+- Profile page: the "Hello, I'm {name}" heading is now an `<h1>` (was
+  `<h3>` — CSS selectors updated in `assets/css/style.css` to keep the
+  exact same visual styling under the new tag). Category
+  (`Teacher::TEACHER_TYPE_LABELS`) is now shown alongside Subject/City when
+  present. A small breadcrumb-style nav links back to the directory and to
+  the subject-/city-filtered listing when that data exists. Avatar `alt`
+  text (`Teacher::altText()`) is now descriptive (name + subject/category +
+  city, with safe fallbacks) instead of just the bare name, on both the
+  profile hero photo and directory card avatars.
+- Every addition is conditional on real data - no blank headings, no
+  keyword stuffing, existing filter functionality and design untouched.
+
 

@@ -266,11 +266,11 @@ ul {
     max-width: 60%;
 
 }
-h3.hello{
+h3.hello, h1.hello{
     font-size: 28px;
     margin: 15px ;
 }
-h3.hello span{
+h3.hello span, h1.hello span{
     font-family: 'clicker Script', cursive;
     font-size: 35px;
     font-weight: 700;
@@ -819,11 +819,11 @@ color: #ffffffff;
     .section-title h2{
         font-size: 30px;
     }
-    h3.hello{
+    h3.hello, h1.hello{
         font-size: 22px;
         margin: 10px 0;
     }
-    h3.hello span{
+    h3.hello span, h1.hello span{
         font-size: 26px;
     }
     h3.my-profession{

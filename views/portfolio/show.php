@@ -126,12 +126,26 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 
     <div class="main-containt">
 
+        <!-- Internal links: back to directory + relevant filtered listings.
+             Only rendered for fields that are actually present. -->
+        <div class="container padd-15" style="padding-bottom:0;">
+            <nav aria-label="Breadcrumb" style="font-size:14px;line-height:1.6;">
+                <a href="<?= Helpers::url('/') ?>">Skoolyst Teachers Directory</a>
+                <?php if ($teacher['subject']): ?>
+                    &raquo; <a href="<?= Helpers::url('/') . '?subject=' . urlencode($teacher['subject']) . '#directory' ?>">More <?= Helpers::e($teacher['subject']) ?> Teachers</a>
+                <?php endif; ?>
+                <?php if ($teacher['city']): ?>
+                    &raquo; <a href="<?= Helpers::url('/') . '?city=' . urlencode($teacher['city']) . '#directory' ?>">Teachers in <?= Helpers::e($teacher['city']) ?></a>
+                <?php endif; ?>
+            </nav>
+        </div>
+
         <!-- HOME -->
         <section class="home section hidden-t" id="home">
             <div class="container padd-15">
                 <div class="row">
                     <div class="home-info padd-15">
-                        <h3 class="hello">Hello, I'm <span class="name"><?= Helpers::e($teacher['full_name']) ?></span></h3>
+                        <h1 class="hello">Hello, I'm <span class="name"><?= Helpers::e($teacher['full_name']) ?></span></h1>
                         <?php
                         $typedStrings = array_filter([
                             $teacher['profession_title'],
@@ -149,7 +163,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                         </a>
                     </div>
                     <div class="home-img padd-15">
-                        <img src="<?= $photo ?>" alt="<?= Helpers::e($teacher['full_name']) ?>">
+                        <img src="<?= $photo ?>" alt="<?= Helpers::e(Teacher::altText($teacher)) ?>">
                     </div>
                 </div>
             </div>
@@ -174,6 +188,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                                 <div class="row">
                                     <?php if ($teacher['qualification']): ?><div class="info-item padd-15"><p>Qualification : <span><?= Helpers::e($teacher['qualification']) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['subject']): ?><div class="info-item padd-15"><p>Subject : <span><?= Helpers::e($teacher['subject']) ?></span></p></div><?php endif; ?>
+                                    <?php if (!empty(Teacher::TEACHER_TYPE_LABELS[$teacher['teacher_type'] ?? ''])): ?><div class="info-item padd-15"><p>Category : <span><?= Helpers::e(Teacher::TEACHER_TYPE_LABELS[$teacher['teacher_type']]) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['email']): ?><div class="info-item padd-15"><p>Email : <span><?= Helpers::e($teacher['email']) ?></span></p></div><?php endif; ?>
                                     <?php if ($teacher['phone']): ?>
                                         <?php if (Auth::check()): ?>
