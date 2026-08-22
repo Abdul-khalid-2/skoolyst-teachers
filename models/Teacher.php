@@ -231,6 +231,60 @@ class Teacher extends Model
         return $stmt->fetchAll();
     }
 
+    /**
+     * JSON-LD (Person + ProfilePage, via @graph) for a public profile page.
+     * Only includes a key when the underlying data is actually present -
+     * missing phone/email/education/skills etc. never break the schema or
+     * hide the page, and nothing here is invented/fake.
+     */
+    public static function jsonLd(array $teacher, string $canonicalUrl, string $photoUrl = ''): array
+    {
+        $person = [
+            '@type' => 'Person',
+            '@id'   => $canonicalUrl . '#person',
+            'name'  => trim((string) ($teacher['full_name'] ?? '')) ?: 'Teacher',
+            'url'   => $canonicalUrl,
+        ];
+
+        $description = self::seoDescription($teacher);
+        if ($description !== '') {
+            $person['description'] = $description;
+        }
+
+        if (trim($photoUrl) !== '') {
+            $person['image'] = $photoUrl;
+        }
+
+        $jobTitle = trim((string) ($teacher['profession_title'] ?? ''));
+        if ($jobTitle === '') {
+            $jobTitle = self::TEACHER_TYPE_LABELS[$teacher['teacher_type'] ?? ''] ?? '';
+        }
+        if ($jobTitle !== '') {
+            $person['jobTitle'] = $jobTitle;
+        }
+
+        $city = trim((string) ($teacher['city'] ?? ''));
+        if ($city !== '') {
+            $person['address'] = [
+                '@type'           => 'PostalAddress',
+                'addressLocality' => $city,
+            ];
+        }
+
+        $profilePage = [
+            '@type'      => 'ProfilePage',
+            '@id'        => $canonicalUrl . '#profilepage',
+            'url'        => $canonicalUrl,
+            'name'       => self::seoTitle($teacher),
+            'mainEntity' => ['@id' => $canonicalUrl . '#person'],
+        ];
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph'   => [$person, $profilePage],
+        ];
+    }
+
     public static function distinctValues(string $column): array
     {
         $allowed = ['subject', 'city', 'qualification', 'teacher_type'];

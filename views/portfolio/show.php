@@ -19,6 +19,10 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <title><?= Helpers::e($title) ?></title>
     <meta name="description" content="<?= Helpers::e($description ?? Teacher::seoDescription($teacher)) ?>">
     <link rel="canonical" href="<?= Helpers::e($canonical ?? Helpers::url('/p/' . $teacher['slug'])) ?>">
+    <script type="application/ld+json"><?= json_encode(
+        Teacher::jsonLd($teacher, $canonical ?? Helpers::url('/p/' . $teacher['slug']), $photo),
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
+    ) ?></script>
     <meta name="csrf-token" content="<?= Helpers::csrfToken() ?>">
 
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-1.css') ?>">

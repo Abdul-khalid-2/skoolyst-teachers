@@ -190,4 +190,19 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   directory, so private/inactive/deleted profiles never appear and no
   optional-field completeness check removes anyone.
 
+**Phase 4 — Structured data (JSON-LD).**
+- `Teacher::jsonLd()` (in `models/Teacher.php`) builds a `Person` +
+  `ProfilePage` schema (as a single `@graph`) for each public profile page,
+  rendered in `views/portfolio/show.php`. A field (description, image,
+  jobTitle, address/locality) is only included when real data exists —
+  nothing is invented, and missing phone/email/education/skills never break
+  or hide the schema. The `@id`/`url` values match the page's own canonical
+  URL.
+- The homepage (`views/home/index.php`) now includes a minimal `WebSite`
+  schema.
+- All JSON-LD is encoded with `JSON_HEX_TAG | JSON_HEX_AMP` (in addition to
+  `JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE`) so a bio or name
+  containing `</script>`, `&`, or other special characters can't break out
+  of the script tag or produce invalid JSON.
+
 
