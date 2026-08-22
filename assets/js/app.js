@@ -19,17 +19,26 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.addEventListener('click', function (e) {
             e.stopPropagation();
             var dropdown = toggle.closest('.actions-dropdown');
+            var row = toggle.closest('tr');
             var wasOpen = dropdown.classList.contains('open');
+
             document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
-            if (!wasOpen) dropdown.classList.add('open');
+            document.querySelectorAll('tr.row-elevated').forEach(function (r) { r.classList.remove('row-elevated'); });
+
+            if (!wasOpen) {
+                dropdown.classList.add('open');
+                if (row) row.classList.add('row-elevated');
+            }
         });
     });
     document.addEventListener('click', function () {
         document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+        document.querySelectorAll('tr.row-elevated').forEach(function (r) { r.classList.remove('row-elevated'); });
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.actions-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+            document.querySelectorAll('tr.row-elevated').forEach(function (r) { r.classList.remove('row-elevated'); });
         }
     });
 
