@@ -195,22 +195,22 @@ img { max-width: 100%; display: block; }
 .section-heading h2 { font-size: 28px; margin: 0 0 10px; color: var(--primary); }
 .section-heading p { color: var(--text-muted); font-size: 15px; }
 
-/* ===== Directory intro wrapper =====
-   Pulls the whole block (intro copy + browse-links + filter bar) up so it
-   visually floats over the bottom edge of the hero section. This used to
-   live on .filter-bar itself, which broke once the browse-links block
-   (Popular subjects/cities/qualifications/categories) was added above the
-   filter bar: the negative margin then pulled the filter bar up over that
-   new content instead of the hero, clipping the "Categories" line. Moving
-   the overlap to the outer wrapper keeps the hero-overlap effect while
-   letting the intro/browse-links/filter-bar stack normally underneath it. */
+/* ===== Directory wrapper =====
+   Pulls the whole #directory block up so the filter bar (its first child)
+   visually floats over the bottom edge of the hero section. Kept on the
+   outer wrapper rather than .filter-bar directly so that if any content
+   is ever placed above the filter bar again, it won't get clipped by a
+   negative margin meant for the hero overlap. The intro copy and
+   subject/city/qualification/category browse-links now live at the
+   bottom of this container, after the results, so they don't compete
+   with the filter bar for top-of-page attention. */
 #directory { margin-top: -46px; position: relative; z-index: 5; }
 @media (max-width: 560px) { #directory { margin-top: 20px; } }
 
 /* ===== Filter bar ===== */
 .filter-bar {
     background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 20px; margin-top: 24px; position: relative;
+    padding: 20px; margin-top: 0; position: relative;
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
 }
 .filter-bar select, .filter-bar input {

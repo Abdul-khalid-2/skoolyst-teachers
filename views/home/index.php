@@ -45,33 +45,6 @@
 </div>
 
 <div class="container" id="directory">
-    <div class="section-pad" style="padding-bottom:0;">
-        <p>Browse verified profiles of school, college, university, science, computer, mathematics and private teachers from across Pakistan. Filter by subject, city, qualification or category to find the right educator, or open any portfolio to see their experience, skills and contact details.</p>
-    </div>
-
-    <?php if ($subjects || $cities || $qualifications): ?>
-    <div class="section-pad" style="padding-top:0;padding-bottom:10px;">
-        <?php if ($subjects): ?>
-            <p style="margin-bottom:6px;"><strong>Popular subjects:</strong>
-                <?php foreach ($subjects as $i => $s): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?subject=' . urlencode($s) . '#directory' ?>"><?= Helpers::e($s) ?></a><?php endforeach; ?>
-            </p>
-        <?php endif; ?>
-        <?php if ($cities): ?>
-            <p style="margin-bottom:6px;"><strong>Popular cities:</strong>
-                <?php foreach ($cities as $i => $c): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?city=' . urlencode($c) . '#directory' ?>"><?= Helpers::e($c) ?></a><?php endforeach; ?>
-            </p>
-        <?php endif; ?>
-        <?php if ($qualifications): ?>
-            <p style="margin-bottom:6px;"><strong>Qualifications:</strong>
-                <?php foreach ($qualifications as $i => $q): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?qualification=' . urlencode($q) . '#directory' ?>"><?= Helpers::e($q) ?></a><?php endforeach; ?>
-            </p>
-        <?php endif; ?>
-        <p style="margin-bottom:0;"><strong>Categories:</strong>
-            <?php foreach ($teacherTypes as $key => $label): ?><a href="<?= Helpers::url('/') . '?type=' . urlencode($key) . '#directory' ?>" style="margin-right:8px;"><?= Helpers::e($label) ?></a><?php endforeach; ?>
-        </p>
-    </div>
-    <?php endif; ?>
-
     <form class="filter-bar" method="get" action="<?= Helpers::url('/') ?>#directory">
         <input type="text" name="q" placeholder="Search by name or title..." value="<?= Helpers::e($filters['q']) ?>">
         <select name="subject">
@@ -136,6 +109,33 @@
             <?php endif; ?>
         <?php endif; ?>
     </div>
+
+    <div class="section-pad" style="padding-top:0;">
+        <p>Browse verified profiles of school, college, university, science, computer, mathematics and private teachers from across Pakistan. Filter by subject, city, qualification or category to find the right educator, or open any portfolio to see their experience, skills and contact details.</p>
+    </div>
+
+    <?php if ($subjects || $cities || $qualifications): ?>
+    <div class="section-pad" style="padding-top:0;">
+        <?php if ($subjects): ?>
+            <p style="margin-bottom:6px;"><strong>Popular subjects:</strong>
+                <?php foreach ($subjects as $i => $s): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?subject=' . urlencode($s) . '#directory' ?>"><?= Helpers::e($s) ?></a><?php endforeach; ?>
+            </p>
+        <?php endif; ?>
+        <?php if ($cities): ?>
+            <p style="margin-bottom:6px;"><strong>Popular cities:</strong>
+                <?php foreach ($cities as $i => $c): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?city=' . urlencode($c) . '#directory' ?>"><?= Helpers::e($c) ?></a><?php endforeach; ?>
+            </p>
+        <?php endif; ?>
+        <?php if ($qualifications): ?>
+            <p style="margin-bottom:6px;"><strong>Qualifications:</strong>
+                <?php foreach ($qualifications as $i => $q): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?qualification=' . urlencode($q) . '#directory' ?>"><?= Helpers::e($q) ?></a><?php endforeach; ?>
+            </p>
+        <?php endif; ?>
+        <p style="margin-bottom:0;"><strong>Categories:</strong>
+            <?php foreach ($teacherTypes as $key => $label): ?><a href="<?= Helpers::url('/') . '?type=' . urlencode($key) . '#directory' ?>" style="margin-right:8px;"><?= Helpers::e($label) ?></a><?php endforeach; ?>
+        </p>
+    </div>
+    <?php endif; ?>
 </div>
 
 <section class="section-pad" style="background:#fff;">
@@ -154,7 +154,7 @@
         </details>
         <details style="margin-bottom:12px;">
             <summary style="cursor:pointer;font-weight:600;">How do I search for a teacher by subject, city or qualification?</summary>
-            <p style="margin-top:8px;">Use the filter bar above the directory, or the subject/city/qualification/category links just above it, to narrow the list.</p>
+            <p style="margin-top:8px;">Use the filter bar at the top of the directory, or the subject/city/qualification/category links below the results, to narrow the list.</p>
         </details>
         <details style="margin-bottom:12px;">
             <summary style="cursor:pointer;font-weight:600;">How can I contact a teacher listed here?</summary>
