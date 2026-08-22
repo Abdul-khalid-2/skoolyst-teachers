@@ -27,10 +27,12 @@ class PortfolioController extends Controller
         $template = in_array($teacher['template'], ['default'], true) ? $teacher['template'] : 'default';
 
         View::render('portfolio/show', [
-            'title'   => $teacher['full_name'] . ' | Teacher Portfolio',
-            'teacher' => $teacher,
-            'isOwner' => $isOwner,
-            'template'=> $template,
+            'title'       => Teacher::seoTitle($teacher),
+            'description' => Teacher::seoDescription($teacher),
+            'canonical'   => Helpers::url('/p/' . $teacher['slug']),
+            'teacher'     => $teacher,
+            'isOwner'     => $isOwner,
+            'template'    => $template,
         ]);
     }
 

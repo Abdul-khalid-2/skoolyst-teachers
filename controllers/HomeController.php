@@ -16,21 +16,16 @@ class HomeController extends Controller
         $result = Teacher::filter($filters, $page, 9);
 
         View::render('home/index', [
-            'title'         => 'Skoolyst Teachers — Build & Share Your Professional Portfolio',
+            'title'         => 'Find Qualified Teachers in Pakistan | Skoolyst Teachers',
+            'description'   => 'Discover qualified school, college, university, science, computer, mathematics and private teachers in Pakistan. Browse teacher portfolios and connect with the right educator.',
+            'canonical'     => Helpers::url('/'),
             'teachers'      => $result['data'],
             'pagination'    => $result,
             'filters'       => $filters,
             'subjects'      => Teacher::distinctValues('subject'),
             'cities'        => Teacher::distinctValues('city'),
             'qualifications'=> Teacher::distinctValues('qualification'),
-            'teacherTypes'  => [
-                'school' => 'School Teacher', 'college' => 'College Teacher',
-                'university' => 'University Professor', 'technical' => 'Technical Instructor',
-                'medical' => 'Medical Faculty', 'science' => 'Science Teacher',
-                'mathematics' => 'Mathematics Teacher', 'arts' => 'Arts Teacher',
-                'computer_science' => 'Computer Science Teacher', 'general' => 'General Subject Teacher',
-                'other' => 'Other',
-            ],
+            'teacherTypes'  => Teacher::TEACHER_TYPE_LABELS,
         ]);
     }
 }

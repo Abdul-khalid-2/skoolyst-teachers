@@ -17,7 +17,8 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Helpers::e($title) ?></title>
-    <meta name="description" content="<?= Helpers::e($teacher['profession_title'] ?: 'Teacher') ?> — <?= Helpers::e(Helpers::strimwidth($teacher['bio'], 140)) ?>">
+    <meta name="description" content="<?= Helpers::e($description ?? Teacher::seoDescription($teacher)) ?>">
+    <link rel="canonical" href="<?= Helpers::e($canonical ?? Helpers::url('/p/' . $teacher['slug'])) ?>">
     <meta name="csrf-token" content="<?= Helpers::csrfToken() ?>">
 
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-1.css') ?>">

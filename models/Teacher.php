@@ -138,6 +138,82 @@ class Teacher extends Model
         ];
     }
 
+    /**
+     * Labels for the teacher_type column, shared by the directory filter
+     * dropdown (HomeController) and SEO title/description generation below,
+     * so both stay in sync from a single source.
+     */
+    public const TEACHER_TYPE_LABELS = [
+        'school' => 'School Teacher', 'college' => 'College Teacher',
+        'university' => 'University Professor', 'technical' => 'Technical Instructor',
+        'medical' => 'Medical Faculty', 'science' => 'Science Teacher',
+        'mathematics' => 'Mathematics Teacher', 'arts' => 'Arts Teacher',
+        'computer_science' => 'Computer Science Teacher', 'general' => 'General Subject Teacher',
+        'other' => 'Other',
+    ];
+
+    /**
+     * SEO <title> for a public profile page.
+     * Format: {Name} - {Subject or Category} in {City} | Skoolyst
+     * Falls back gracefully when subject/category and/or city are missing —
+     * a profile is never hidden or left with an empty title for this reason.
+     */
+    public static function seoTitle(array $teacher): string
+    {
+        $name = trim((string) ($teacher['full_name'] ?? '')) ?: 'Teacher';
+
+        $subjectOrCategory = trim((string) ($teacher['subject'] ?? ''));
+        if ($subjectOrCategory === '') {
+            $subjectOrCategory = self::TEACHER_TYPE_LABELS[$teacher['teacher_type'] ?? ''] ?? '';
+        }
+
+        $city = trim((string) ($teacher['city'] ?? ''));
+
+        if ($subjectOrCategory !== '' && $city !== '') {
+            return "{$name} - {$subjectOrCategory} in {$city} | Skoolyst";
+        }
+        if ($subjectOrCategory !== '') {
+            return "{$name} - {$subjectOrCategory} | Skoolyst";
+        }
+        if ($city !== '') {
+            return "{$name} - Teacher in {$city} | Skoolyst";
+        }
+        return "{$name} - Teacher Portfolio | Skoolyst";
+    }
+
+    /**
+     * SEO meta description for a public profile page, ~150-160 chars.
+     * Uses the teacher's bio when available; otherwise builds a safe
+     * fallback sentence from name/subject/category/city so the tag is
+     * never empty or broken.
+     */
+    public static function seoDescription(array $teacher): string
+    {
+        $name = trim((string) ($teacher['full_name'] ?? '')) ?: 'This teacher';
+        $bio = trim((string) ($teacher['bio'] ?? ''));
+
+        if ($bio !== '') {
+            return Helpers::strimwidth($bio, 157, '...');
+        }
+
+        // A raw subject (e.g. "Physics") isn't a role noun on its own, so it
+        // needs a trailing "teacher"; a teacher_type label (e.g. "Science
+        // Teacher") already is one and is used as-is.
+        $subject = trim((string) ($teacher['subject'] ?? ''));
+        if ($subject !== '') {
+            $roleLabel = "{$subject} teacher";
+        } else {
+            $roleLabel = self::TEACHER_TYPE_LABELS[$teacher['teacher_type'] ?? ''] ?? 'teacher';
+        }
+        $city = trim((string) ($teacher['city'] ?? ''));
+
+        $desc = $city !== ''
+            ? "{$name} is a {$roleLabel} based in {$city}. Explore their qualifications, experience and skills on Skoolyst Teachers."
+            : "{$name} is a {$roleLabel}. Explore their qualifications, experience and skills on Skoolyst Teachers.";
+
+        return Helpers::strimwidth($desc, 157, '...');
+    }
+
     public static function distinctValues(string $column): array
     {
         $allowed = ['subject', 'city', 'qualification', 'teacher_type'];

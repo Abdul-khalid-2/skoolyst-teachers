@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => $title]); ?>
+<?php View::partial('layouts/header', ['title' => $title, 'description' => $description, 'canonical' => $canonical]); ?>
 
 <section class="hero">
     <div class="container hero-grid">

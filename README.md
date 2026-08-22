@@ -152,3 +152,28 @@ production SaaS:
 - Additional paid templates (the architecture already supports this)
 - Admin ability to feature/verify teachers, and basic analytics (the
   `views_count` column is already tracked per portfolio)
+
+## 8. SEO implementation notes
+
+**Phase 1 — Directory visibility audit.** Reviewed `Teacher::filter()`,
+`HomeController`, and the directory card template. No "profile completeness"
+condition gates directory visibility — filtering already relies only on
+`status = 'active'` and `is_public = 1`, and the card template already
+degrades gracefully when optional fields (phone, email, bio, education,
+skills, city, photo) are missing. No code changes were needed for this phase.
+
+**Phase 2 — SEO metadata.**
+- `Teacher::seoTitle()` / `Teacher::seoDescription()` (in `models/Teacher.php`)
+  generate a unique `<title>` and meta description per public profile, with
+  safe fallbacks when subject, city, category, or bio are missing — a
+  profile's title/description is never empty or broken.
+- Homepage (`HomeController` → `views/home/index.php` →
+  `views/layouts/header.php`) now ships a fixed, targeted title/meta
+  description and a self-referencing canonical URL.
+- Every public profile page (`views/portfolio/show.php`) now has a unique
+  title, a ~150-160 character meta description (from bio, or a generated
+  fallback), and a self-referencing canonical URL pointing at `/p/{slug}`.
+- `views/layouts/header.php` accepts optional `description`/`canonical`
+  variables; other pages (login, register, dashboard, admin, 404) are
+  unaffected since they don't pass them.
+
