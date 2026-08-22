@@ -20,6 +20,7 @@ $router = new Router();
 
 // ----- Public site -----
 $router->get('/', [HomeController::class, 'index']);
+$router->get('/sitemap.xml', [SitemapController::class, 'index']);
 
 // ----- Auth -----
 $router->get('/register', [AuthController::class, 'registerForm']);

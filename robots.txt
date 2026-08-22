@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard
+Disallow: /admin
+
+Sitemap: https://teachers.skoolyst.com/sitemap.xml

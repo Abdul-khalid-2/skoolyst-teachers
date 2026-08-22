@@ -214,6 +214,23 @@ class Teacher extends Model
         return Helpers::strimwidth($desc, 157, '...');
     }
 
+    /**
+     * Every currently-public, active teacher profile, for the sitemap.
+     * Deliberately uses the exact same visibility rule as the public
+     * directory (role/status/is_public) with no completeness condition, so
+     * missing optional fields never remove a profile from the sitemap, and
+     * private/inactive/deleted profiles never appear in it.
+     */
+    public static function allPublicForSitemap(): array
+    {
+        $stmt = self::conn()->query(
+            "SELECT slug, updated_at FROM teachers
+             WHERE role = 'teacher' AND status = 'active' AND is_public = 1
+             ORDER BY updated_at DESC"
+        );
+        return $stmt->fetchAll();
+    }
+
     public static function distinctValues(string $column): array
     {
         $allowed = ['subject', 'city', 'qualification', 'teacher_type'];

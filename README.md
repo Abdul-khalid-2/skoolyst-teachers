@@ -177,3 +177,17 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   variables; other pages (login, register, dashboard, admin, 404) are
   unaffected since they don't pass them.
 
+**Phase 3 — robots.txt and sitemap.xml.**
+- `robots.txt` is a static plain-text file at the project root (served
+  directly by Apache since it's a real file — `.htaccess` never routes it
+  through `index.php`, so it can't render as an HTML 404 page). Allows
+  everything except `/login`, `/register`, `/dashboard`, `/admin`, and
+  references the sitemap.
+- `/sitemap.xml` is generated dynamically by `SitemapController` (registered
+  in `index.php`), with `Content-Type: application/xml`. It lists the
+  homepage plus every teacher from `Teacher::allPublicForSitemap()` — the
+  same `status = 'active'` / `is_public = 1` rule used by the public
+  directory, so private/inactive/deleted profiles never appear and no
+  optional-field completeness check removes anyone.
+
+
