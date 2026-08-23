@@ -45,32 +45,32 @@
 </div>
 
 <div class="container" id="directory">
-    <div class="section-pad" style="padding-bottom:0;">
+    <div class="section-pad" style="padding-bottom:0;margin-bottom:56px;">
         <p>Browse verified profiles of school, college, university, science, computer, mathematics and private teachers from across Pakistan. Filter by subject, city, qualification or category to find the right educator, or open any portfolio to see their experience, skills and contact details.</p>
-    </div>
 
-    <?php if ($subjects || $cities || $qualifications): ?>
-    <div class="section-pad" style="padding-top:0;padding-bottom:10px;">
-        <?php if ($subjects): ?>
-            <p style="margin-bottom:6px;"><strong>Popular subjects:</strong>
-                <?php foreach ($subjects as $i => $s): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?subject=' . urlencode($s) . '#directory' ?>"><?= Helpers::e($s) ?></a><?php endforeach; ?>
+        <?php if ($subjects || $cities || $qualifications): ?>
+        <div style="margin-top:16px;">
+            <?php if ($subjects): ?>
+                <p style="margin-bottom:6px;"><strong>Popular subjects:</strong>
+                    <?php foreach ($subjects as $i => $s): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?subject=' . urlencode($s) . '#directory' ?>"><?= Helpers::e($s) ?></a><?php endforeach; ?>
+                </p>
+            <?php endif; ?>
+            <?php if ($cities): ?>
+                <p style="margin-bottom:6px;"><strong>Popular cities:</strong>
+                    <?php foreach ($cities as $i => $c): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?city=' . urlencode($c) . '#directory' ?>"><?= Helpers::e($c) ?></a><?php endforeach; ?>
+                </p>
+            <?php endif; ?>
+            <?php if ($qualifications): ?>
+                <p style="margin-bottom:6px;"><strong>Qualifications:</strong>
+                    <?php foreach ($qualifications as $i => $q): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?qualification=' . urlencode($q) . '#directory' ?>"><?= Helpers::e($q) ?></a><?php endforeach; ?>
+                </p>
+            <?php endif; ?>
+            <p style="margin-bottom:0;"><strong>Categories:</strong>
+                <?php $i = 0; foreach ($teacherTypes as $key => $label): ?><?= $i++ > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?type=' . urlencode($key) . '#directory' ?>"><?= Helpers::e($label) ?></a><?php endforeach; ?>
             </p>
+        </div>
         <?php endif; ?>
-        <?php if ($cities): ?>
-            <p style="margin-bottom:6px;"><strong>Popular cities:</strong>
-                <?php foreach ($cities as $i => $c): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?city=' . urlencode($c) . '#directory' ?>"><?= Helpers::e($c) ?></a><?php endforeach; ?>
-            </p>
-        <?php endif; ?>
-        <?php if ($qualifications): ?>
-            <p style="margin-bottom:6px;"><strong>Qualifications:</strong>
-                <?php foreach ($qualifications as $i => $q): ?><?= $i > 0 ? ', ' : ' ' ?><a href="<?= Helpers::url('/') . '?qualification=' . urlencode($q) . '#directory' ?>"><?= Helpers::e($q) ?></a><?php endforeach; ?>
-            </p>
-        <?php endif; ?>
-        <p style="margin-bottom:0;"><strong>Categories:</strong>
-            <?php foreach ($teacherTypes as $key => $label): ?><a href="<?= Helpers::url('/') . '?type=' . urlencode($key) . '#directory' ?>" style="margin-right:8px;"><?= Helpers::e($label) ?></a><?php endforeach; ?>
-        </p>
     </div>
-    <?php endif; ?>
 
     <form class="filter-bar" method="get" action="<?= Helpers::url('/') ?>#directory">
         <input type="text" name="q" placeholder="Search by name or title..." value="<?= Helpers::e($filters['q']) ?>">
