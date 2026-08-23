@@ -25,7 +25,7 @@
 
         <div class="hero-media">
             <button type="button" class="video-thumb" id="heroVideoTrigger" data-video-id="0tp_ng9HVR4" aria-haspopup="dialog" aria-controls="heroVideoModal" aria-label="Play intro video">
-                <img src="<?= Helpers::asset('image/thumnal.jpg') ?>" width="899" height="506" alt="Skoolyst Teachers intro video thumbnail">
+                <img src="<?= Helpers::asset('image/thumnal.jpg') ?>" alt="Skoolyst Teachers intro video thumbnail">
                 <span class="video-thumb-play" aria-hidden="true">
                     <i class="fa fa-play"></i>
                 </span>
