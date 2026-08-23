@@ -9,6 +9,20 @@ $awd   = Helpers::jsonDecode($teacher['awards']);
 $social= Helpers::jsonDecode($teacher['social_links']);
 $initial = Helpers::initial($teacher['full_name']);
 $photo = $teacher['profile_photo'] ? Helpers::asset($teacher['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($teacher['full_name']) . '&background=0A2D52&color=fff&size=400';
+$photoFallback = 'https://ui-avatars.com/api/?name=' . urlencode($teacher['full_name']) . '&background=0A2D52&color=fff&size=400';
+// Real dimensions when we have an actual uploaded file (so the browser can
+// reserve the right box and avoid layout shift); the ui-avatars fallback is
+// always a known 400x400 square either way.
+$photoWidth = $photoHeight = 400;
+if ($teacher['profile_photo']) {
+    $photoFile = ASSETS_PATH . '/' . $teacher['profile_photo'];
+    if (is_file($photoFile)) {
+        $dims = @getimagesize($photoFile);
+        if ($dims) {
+            [$photoWidth, $photoHeight] = $dims;
+        }
+    }
+}
 $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 ?>
 <!DOCTYPE html>
@@ -28,8 +42,9 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-1.css') ?>">
     <link rel="stylesheet" href="<?= Helpers::asset('css/style.css') ?>">
+    <!-- Font Awesome is self-hosted here (css/all.css + assets/webfonts) -
+         the CDN copy that used to also load on this page was a duplicate. -->
     <link rel="stylesheet" href="<?= Helpers::asset('css/all.css') ?>" type="text/css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-1.css') ?>" class="alternate-style" title="color-1" disabled>
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-2.css') ?>" class="alternate-style" title="color-2" disabled>
     <link rel="stylesheet" href="<?= Helpers::asset('css/skin/color-3.css') ?>" class="alternate-style" title="color-3" disabled>
@@ -164,7 +179,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                         </a>
                     </div>
                     <div class="home-img padd-15">
-                        <img src="<?= $photo ?>" alt="<?= Helpers::e(Teacher::altText($teacher)) ?>">
+                        <img src="<?= $photo ?>" width="<?= (int) $photoWidth ?>" height="<?= (int) $photoHeight ?>" alt="<?= Helpers::e(Teacher::altText($teacher)) ?>" onerror="this.onerror=null;this.src='<?= Helpers::e($photoFallback) ?>';">
                     </div>
                 </div>
             </div>

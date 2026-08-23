@@ -255,4 +255,41 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   description, or the page title — phone numbers specifically are never
   in the page HTML at all, only delivered via an authenticated AJAX call.
 
+**Phase 7 — Performance and image SEO.**
+- Removed a duplicate Font Awesome load on the profile page
+  (`views/portfolio/show.php` was loading both the self-hosted
+  `css/all.css` + `assets/webfonts/*` and the same library again from a
+  CDN — confirmed every icon class in use exists in the local copy, then
+  dropped the CDN `<link>`).
+- Added explicit `width`/`height` to every `<img>` on the homepage and
+  profile page (logo, hero thumbnail, directory-card avatars, profile
+  photo) to reduce layout shift. The profile photo's dimensions are read
+  from the real uploaded file via `getimagesize()` when present, falling
+  back safely to 400x400 (matching the ui-avatars placeholder) if the
+  record points at a file that's missing - no warning, no broken layout,
+  profile still renders.
+- Added `loading="lazy"` to the below-the-fold directory-card avatars;
+  removed it from the hero video thumbnail (above the fold, so it now
+  loads eagerly instead of competing for load priority against nothing).
+- Added an `onerror` fallback on directory-card and profile-photo `<img>`
+  tags so a broken/deleted image URL swaps to the generated ui-avatars
+  placeholder instead of a broken-image icon — a bad image never hides or
+  breaks a profile.
+- Identified and fixed an oversized asset on the homepage: the hero video
+  thumbnail (`assets/image/thumnal.png`) was a 920KB PNG displayed at a
+  fraction of its native 1672x941 size. Replaced it with a resized,
+  re-encoded `assets/image/thumnal.jpg` (899x506, ~68KB — a 93% reduction)
+  with no visible quality loss at its actual display size.
+- Also identified two large, entirely unreferenced images in the repo
+  (`assets/image/Skoolyst1.png` ~172KB, `assets/image/Skoolyst2.png`
+  ~1.1MB) - not loaded by any page, so no runtime performance impact, but
+  flagging them here since they're dead weight in the repo. Left them in
+  place rather than deleting without confirmation.
+- `.htaccess`: added `mod_expires`/`mod_headers` cache-control rules
+  scoped strictly to static file extensions (images, fonts, CSS, JS), so
+  browsers/CDNs cache them for 1 week-1 month. This only touches files
+  Apache serves directly - dynamic routes like `/sitemap.xml` (no matching
+  physical file) are untouched and still go through `index.php` every
+  request.
+
 

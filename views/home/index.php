@@ -25,7 +25,7 @@
 
         <div class="hero-media">
             <button type="button" class="video-thumb" id="heroVideoTrigger" data-video-id="0tp_ng9HVR4" aria-haspopup="dialog" aria-controls="heroVideoModal" aria-label="Play intro video">
-                <img src="<?= Helpers::asset('image/thumnal.png') ?>" alt="Skoolyst Teachers intro video thumbnail" loading="lazy">
+                <img src="<?= Helpers::asset('image/thumnal.jpg') ?>" width="899" height="506" alt="Skoolyst Teachers intro video thumbnail">
                 <span class="video-thumb-play" aria-hidden="true">
                     <i class="fa fa-play"></i>
                 </span>
@@ -84,7 +84,7 @@
             <div class="teacher-grid">
                 <?php foreach ($teachers as $t): ?>
                     <a href="<?= Helpers::url('/p/' . $t['slug']) ?>" class="teacher-card">
-                        <img class="avatar" src="<?= $t['profile_photo'] ? Helpers::asset($t['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($t['full_name']) . '&background=0A2D52&color=fff' ?>" alt="<?= Helpers::e(Teacher::altText($t)) ?>">
+                        <img class="avatar" src="<?= $t['profile_photo'] ? Helpers::asset($t['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($t['full_name']) . '&background=0A2D52&color=fff' ?>" width="84" height="84" loading="lazy" alt="<?= Helpers::e(Teacher::altText($t)) ?>" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=<?= urlencode($t['full_name']) ?>&background=0A2D52&color=fff';">
                         <h4><?= Helpers::e($t['full_name']) ?></h4>
                         <div class="role"><?= Helpers::e($t['profession_title'] ?: 'Teacher') ?></div>
                         <div class="meta">

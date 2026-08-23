@@ -13,4 +13,26 @@ RewriteRule ^ index.php [L]
     Header set X-Content-Type-Options "nosniff"
 </IfModule>
 
+# Cache static assets at the browser/CDN level. Scoped to file extensions so
+# it only affects real static files served directly by Apache - dynamic
+# routes (including /sitemap.xml, which has no matching physical file) are
+# always handled by index.php and are unaffected by this block.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+</IfModule>
+<IfModule mod_headers.c>
+    <FilesMatch "\.(png|jpe?g|webp|svg|ico|woff2?|css|js)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+</IfModule>
+
 Options -Indexes
