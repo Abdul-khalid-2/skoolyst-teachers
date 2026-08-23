@@ -297,5 +297,120 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   Apache serves directly - dynamic routes like `/sitemap.xml` (no matching
   physical file) are untouched and still go through `index.php` every
   request.
+- Two follow-up fixes after live testing surfaced conflicts between the
+  Phase 7 `width`/`height` attributes and existing CSS: the hero
+  thumbnail (`aspect-ratio: 16/9` in CSS) and the logo + profile photo
+  (fixed CSS `height` with auto width) both rendered at their natural
+  size instead of the CSS-constrained one. Removed the attributes from
+  all three; only the directory-card avatars keep them, since CSS fixes
+  both axes there to the exact same values with no possible mismatch.
 
+## 9. Phase 8 — SEO validation report
+
+Validated by running the real app end-to-end: installed MariaDB + PHP's
+built-in server locally, imported `database/schema.sql`, seeded four
+teachers covering every required scenario (complete public profile,
+public profile with all optional fields blank, a private profile, an
+inactive profile) plus the schema's own super-admin row, and used a tiny
+router script that mirrors `.htaccess`'s rewrite logic exactly (serve
+real files directly, else route to `index.php`) so results match
+production Apache behavior rather than PHP dev-server quirks. All test
+files/database/`.env` were local-only and removed afterward - nothing
+test-related was committed.
+
+**1. Files changed (Phases 2-7, this project's SEO work):**
+`models/Teacher.php`, `controllers/HomeController.php`,
+`controllers/PortfolioController.php`, `controllers/SitemapController.php`
+(new), `views/layouts/header.php`, `views/home/index.php`,
+`views/portfolio/show.php`, `views/auth/login.php`,
+`views/auth/register.php`, `views/dashboard/edit.php`,
+`views/admin/dashboard.php`, `views/admin/teachers.php`,
+`views/errors/404.php`, `views/portfolio/resume-locked.php`,
+`assets/css/style.css`, `.htaccess`, `robots.txt` (new),
+`assets/image/thumnal.jpg` (new, replaces `thumnal.png`), `README.md`.
+No database, schema, or authentication logic was touched at any phase.
+
+**2. Tests performed:** HTTP status codes, `<title>`, meta description,
+canonical URL, robots meta tag, H1 count/content, JSON-LD presence and
+`json.loads()` validity, sitemap inclusion/exclusion, directory
+inclusion/exclusion, breadcrumb internal links, missing-field fallback
+rendering, private-data leak check (phone/email against full HTML and
+JSON-LD specifically), and auth-route redirect behavior - across all 10
+required URL types plus an inactive-profile page and `/dashboard`+`/admin`
+as an authentication regression check.
+
+**3. Passed checks:**
+- Homepage: 200, H1 "Find Qualified Teachers in Pakistan" (exactly one),
+  exact title/description as specified, self-referencing canonical,
+  `index, follow`, valid `WebSite` JSON-LD.
+- Directory (same page): active+public profiles present
+  (`ayesha-khan`, `bilal-ahmed`); private (`sara-iqbal`) and inactive
+  (`usman-tariq`) correctly absent.
+- Complete profile (`ayesha-khan`): 200, one H1 (name), unique title
+  "Ayesha Khan - Mathematics in Karachi | Skoolyst", description from
+  bio, canonical matches the page URL, `index, follow`, valid
+  Person+ProfilePage JSON-LD with name/description/image/jobTitle/address
+  all populated.
+- Missing-fields profile (`bilal-ahmed`): 200, one H1, non-empty
+  fallback title "Bilal Ahmed - Teacher Portfolio | Skoolyst" and
+  fallback description, no blank "Subject :"/"City :" labels rendered,
+  JSON-LD valid with `jobTitle`/`address` cleanly omitted (not empty
+  strings) since that data doesn't exist - profile not hidden.
+- Login/Register: 200, `noindex, follow`.
+- Private profile (`sara-iqbal`, not logged in as owner): 404,
+  `noindex, follow` (from the shared 404 page), absent from directory
+  and sitemap.
+- Inactive profile (`usman-tariq`): 200 (reachable by direct link, as
+  designed), `noindex, follow`, absent from directory and sitemap.
+- Invalid profile URL: 404, `noindex, follow`.
+- `/robots.txt`: 200, `text/plain`, exact policy specified in Phase 3.
+- `/sitemap.xml`: 200, `application/xml`, valid per `xmllint`, contains
+  homepage + exactly the two active/public teachers, correctly excludes
+  private/inactive/admin rows.
+- No phone number or email address found anywhere in JSON-LD on any
+  profile; no phone number found anywhere in page HTML on any profile
+  (confirmed for the complete profile, which has one on file).
+- `/dashboard` and `/admin` (no session): 302 redirect, unchanged -
+  authentication untouched by any SEO phase.
+
+**4. Failed checks:** none found against the stated requirements.
+
+**5. Remaining issues (informational, not fixed - outside this phase's
+scope of validation/reporting and "no unrelated changes"):**
+- `index.php` calls `session_start()` for every request, including
+  `/sitemap.xml` and `/robots.txt`, so those responses carry a
+  `Set-Cookie` header. Some CDNs/proxies won't cache a response that
+  sets a cookie, which could reduce sitemap-fetch efficiency for
+  crawlers at scale. Not an SEO-correctness bug (content/status/headers
+  are otherwise all correct), just a minor efficiency note worth a look
+  in a future non-SEO pass.
+- Two unreferenced large images remain in the repo from Phase 7
+  (`assets/image/Skoolyst1.png`, `assets/image/Skoolyst2.png`) - flagged
+  there, still not deleted pending your confirmation.
+- `views/portfolio/resume.php` (the actual resume/CV page, distinct from
+  `resume-locked.php`) has its own `<head>` and wasn't brought into the
+  title/description/canonical/robots system built in Phases 2-6, since
+  it wasn't named in any phase's scope. Low priority (it's a
+  utility/download-style page, arguably fine to leave indexable or not),
+  but flagging in case you want it covered.
+
+**6. Deployment instructions:**
+1. Pull the latest `main` branch onto the server (or apply the pushed
+   commits) - no database migration is needed, no schema changed.
+2. No `.env` changes needed - all Phase 2-8 work reads existing config
+   only (`BASE_URL`, DB credentials already in place).
+3. Confirm Apache has `mod_rewrite`, `mod_expires`, and `mod_headers`
+   enabled (Hostinger has all three by default); the `<IfModule>` guards
+   in `.htaccess` mean nothing breaks even if one is missing, they just
+   silently no-op.
+4. Clear any existing CDN/browser cache for `assets/css/*.css` and
+   `assets/image/*` once, since the new `Cache-Control` headers only
+   apply going forward.
+5. After deploy, spot check in a browser: homepage title/H1, one
+   complete profile, one incomplete profile, `/robots.txt`,
+   `/sitemap.xml`, and re-submit the sitemap in Google Search Console
+   (URL changed in structure only if you'd previously submitted one from
+   before Phase 3 - the endpoint itself, `/sitemap.xml`, hasn't moved).
+6. No server restart, cron, or queue changes required - everything here
+   is plain PHP/HTML/CSS/static-file changes.
 
