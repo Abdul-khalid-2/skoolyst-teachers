@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => $title]); ?>
+<?php View::partial('layouts/header', ['title' => $title, 'robots' => 'noindex, follow']); ?>
 
 <div class="auth-wrap" style="min-height:60vh;">
     <div style="text-align:center; max-width:480px; margin:0 auto;">

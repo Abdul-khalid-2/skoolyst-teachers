@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => $title]); ?>
+<?php View::partial('layouts/header', ['title' => $title, 'robots' => 'noindex, follow']); ?>
 
 <div class="container" style="padding:30px 20px;">
     <h2 style="color:var(--primary);margin-bottom:4px;">Manage Teachers</h2>

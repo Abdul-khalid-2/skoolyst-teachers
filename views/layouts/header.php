@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Helpers::e($title ?? 'Skoolyst Teachers') ?></title>
     <meta name="description" content="<?= Helpers::e($description ?? 'Skoolyst Teachers — build and share your professional teaching portfolio in minutes.') ?>">
+    <meta name="robots" content="<?= Helpers::e($robots ?? 'index, follow') ?>">
     <?php if (!empty($canonical)): ?>
         <link rel="canonical" href="<?= Helpers::e($canonical) ?>">
     <?php endif; ?>

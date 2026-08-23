@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => 'Page Not Found']); ?>
+<?php View::partial('layouts/header', ['title' => 'Page Not Found', 'robots' => 'noindex, follow']); ?>
 
 <div class="auth-wrap" style="min-height:60vh;">
     <div style="text-align:center;">

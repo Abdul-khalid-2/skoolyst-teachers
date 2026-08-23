@@ -26,10 +26,17 @@ class PortfolioController extends Controller
 
         $template = in_array($teacher['template'], ['default'], true) ? $teacher['template'] : 'default';
 
+        // Same eligibility rule as the public directory/sitemap
+        // (status='active' AND is_public=1). A profile that fails it is
+        // still reachable directly (e.g. the owner previewing it, or an
+        // old shared link) but must never be indexed.
+        $isDirectoryEligible = $teacher['status'] === 'active' && (bool) $teacher['is_public'];
+
         View::render('portfolio/show', [
             'title'       => Teacher::seoTitle($teacher),
             'description' => Teacher::seoDescription($teacher),
             'canonical'   => Helpers::url('/p/' . $teacher['slug']),
+            'robots'      => $isDirectoryEligible ? 'index, follow' : 'noindex, follow',
             'teacher'     => $teacher,
             'isOwner'     => $isOwner,
             'template'    => $template,

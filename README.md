@@ -227,4 +227,32 @@ skills, city, photo) are missing. No code changes were needed for this phase.
 - Every addition is conditional on real data - no blank headings, no
   keyword stuffing, existing filter functionality and design untouched.
 
+**Phase 6 — Indexing, privacy and status handling.**
+- Confirmed `Teacher::allPublicForSitemap()` and `Teacher::filter()` already
+  share the exact same eligibility rule (`status = 'active' AND
+  is_public = 1`), so active+public profiles are the only ones ever in the
+  directory/sitemap, and no optional-field completeness check affects
+  eligibility.
+- `PortfolioController::show()` now computes that same eligibility rule
+  and sets `<meta name="robots">` accordingly on the profile page: `index,
+  follow` when eligible, `noindex, follow` otherwise (private and/or
+  inactive) — so a profile that's reachable by direct link (e.g. an
+  owner's preview) is never indexable when it shouldn't be.
+- A deleted teacher's row no longer exists, so `Teacher::findBySlug()`
+  returns null and `/p/{slug}` already 404s correctly — verified, no
+  change needed.
+- Added `<meta name="robots" content="noindex, follow">` to
+  login, register, dashboard, admin, 404, and the resume-locked gate page
+  (all via `views/layouts/header.php`, which now accepts an optional
+  `robots` variable, defaulting to `index, follow` everywhere else).
+- `robots.txt` was deliberately left untouched — it already only lists the
+  utility route prefixes (not used as an access-control or "hide private
+  profile" mechanism, since Disallow entries are public and not
+  enforceable).
+- Confirmed no private data (phone, email is only shown because a teacher
+  chooses to put it on their own public bio, never system fields like
+  `id`/`uuid`/`resume_access`) appears in `Teacher::jsonLd()`, the meta
+  description, or the page title — phone numbers specifically are never
+  in the page HTML at all, only delivered via an authenticated AJAX call.
+
 

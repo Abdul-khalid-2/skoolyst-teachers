@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => $title]); ?>
+<?php View::partial('layouts/header', ['title' => $title, 'robots' => 'noindex, follow']); ?>
 
 <div class="auth-wrap">
     <div class="auth-card">

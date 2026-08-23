@@ -18,6 +18,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Helpers::e($title) ?></title>
     <meta name="description" content="<?= Helpers::e($description ?? Teacher::seoDescription($teacher)) ?>">
+    <meta name="robots" content="<?= Helpers::e($robots ?? 'index, follow') ?>">
     <link rel="canonical" href="<?= Helpers::e($canonical ?? Helpers::url('/p/' . $teacher['slug'])) ?>">
     <script type="application/ld+json"><?= json_encode(
         Teacher::jsonLd($teacher, $canonical ?? Helpers::url('/p/' . $teacher['slug']), $photo),

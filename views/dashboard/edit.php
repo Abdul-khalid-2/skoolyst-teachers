@@ -1,4 +1,4 @@
-<?php View::partial('layouts/header', ['title' => $title]); ?>
+<?php View::partial('layouts/header', ['title' => $title, 'robots' => 'noindex, follow']); ?>
 
 <?php
 $tabs = [
