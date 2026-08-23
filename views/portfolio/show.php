@@ -10,19 +10,6 @@ $social= Helpers::jsonDecode($teacher['social_links']);
 $initial = Helpers::initial($teacher['full_name']);
 $photo = $teacher['profile_photo'] ? Helpers::asset($teacher['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($teacher['full_name']) . '&background=0A2D52&color=fff&size=400';
 $photoFallback = 'https://ui-avatars.com/api/?name=' . urlencode($teacher['full_name']) . '&background=0A2D52&color=fff&size=400';
-// Real dimensions when we have an actual uploaded file (so the browser can
-// reserve the right box and avoid layout shift); the ui-avatars fallback is
-// always a known 400x400 square either way.
-$photoWidth = $photoHeight = 400;
-if ($teacher['profile_photo']) {
-    $photoFile = ASSETS_PATH . '/' . $teacher['profile_photo'];
-    if (is_file($photoFile)) {
-        $dims = @getimagesize($photoFile);
-        if ($dims) {
-            [$photoWidth, $photoHeight] = $dims;
-        }
-    }
-}
 $shareUrl = Helpers::url('/p/' . $teacher['slug']);
 ?>
 <!DOCTYPE html>
@@ -179,7 +166,7 @@ $shareUrl = Helpers::url('/p/' . $teacher['slug']);
                         </a>
                     </div>
                     <div class="home-img padd-15">
-                        <img src="<?= $photo ?>" width="<?= (int) $photoWidth ?>" height="<?= (int) $photoHeight ?>" alt="<?= Helpers::e(Teacher::altText($teacher)) ?>" onerror="this.onerror=null;this.src='<?= Helpers::e($photoFallback) ?>';">
+                        <img src="<?= $photo ?>" alt="<?= Helpers::e(Teacher::altText($teacher)) ?>" onerror="this.onerror=null;this.src='<?= Helpers::e($photoFallback) ?>';">
                     </div>
                 </div>
             </div>

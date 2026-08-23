@@ -19,7 +19,7 @@
 <nav class="app-navbar">
     <div class="container">
         <a href="<?= Helpers::url('/') ?>" class="app-brand">
-            <img src="<?= Helpers::asset('image/Skoolyst.png') ?>" width="894" height="279" alt="Skoolyst" onerror="this.style.display='none'">
+            <img src="<?= Helpers::asset('image/Skoolyst.png') ?>" alt="Skoolyst" onerror="this.style.display='none'">
         </a>
         <button class="navbar-toggle" aria-label="Menu"><i class="fa fa-bars"></i></button>
         <ul class="app-nav-links">

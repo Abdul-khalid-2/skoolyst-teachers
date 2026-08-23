@@ -261,13 +261,19 @@ skills, city, photo) are missing. No code changes were needed for this phase.
   `css/all.css` + `assets/webfonts/*` and the same library again from a
   CDN — confirmed every icon class in use exists in the local copy, then
   dropped the CDN `<link>`).
-- Added explicit `width`/`height` to every `<img>` on the homepage and
-  profile page (logo, hero thumbnail, directory-card avatars, profile
-  photo) to reduce layout shift. The profile photo's dimensions are read
-  from the real uploaded file via `getimagesize()` when present, falling
-  back safely to 400x400 (matching the ui-avatars placeholder) if the
-  record points at a file that's missing - no warning, no broken layout,
-  profile still renders.
+- Added explicit `width`/`height` HTML attributes only where they can't
+  conflict with anything: the directory-card avatars, where CSS already
+  fixes both `width: 84px; height: 84px;` to the exact same values. For
+  the logo, hero thumbnail, and profile photo — each governed by CSS via
+  a fixed dimension on one axis (`height: 40px`, `aspect-ratio: 16/9`, or
+  `height: 400px`) with the other axis left to scale — adding HTML
+  `width`/`height` attributes caused the browser to render at the
+  image's natural size instead of respecting that CSS, breaking the
+  layout (reported and fixed twice during testing: hero thumbnail
+  cropping via `object-fit: cover`, then the logo rendering full-size).
+  Removed the attributes from all three; the existing CSS rules already
+  fully constrain their box with no layout-shift risk, since CSS applies
+  before the image's own dimensions are relevant.
 - Added `loading="lazy"` to the below-the-fold directory-card avatars;
   removed it from the hero video thumbnail (above the fold, so it now
   loads eagerly instead of competing for load priority against nothing).
