@@ -22,6 +22,10 @@ $router = new Router();
 $router->get('/', [HomeController::class, 'index']);
 $router->get('/sitemap.xml', [SitemapController::class, 'index']);
 
+// ----- AdEngine tracking proxy (keeps ADS_API_KEY server-side only) -----
+$router->post('/ads/track/impression', [AdsController::class, 'impression']);
+$router->post('/ads/track/click', [AdsController::class, 'click']);
+
 // ----- Auth -----
 $router->get('/register', [AuthController::class, 'registerForm']);
 $router->post('/register', [AuthController::class, 'register']);

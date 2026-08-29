@@ -44,6 +44,26 @@
     </div>
 </div>
 
+<?php if ($homeAd): ?>
+<div class="container">
+    <div class="ad-slot" data-ad-id="<?= (int) $homeAd['id'] ?>" data-ad-slot="home_top">
+        <span class="ad-slot-label">Sponsored</span>
+        <a class="ad-slot-card" href="<?= Helpers::e($homeAd['click_url']) ?>" target="_blank" rel="noopener sponsored" data-ad-click>
+            <?php if (!empty($homeAd['image_path'])): ?>
+                <img src="<?= Helpers::e(AdEngine::imageUrl($homeAd['image_path'])) ?>" alt="<?= Helpers::e($homeAd['title']) ?>" loading="lazy">
+            <?php endif; ?>
+            <div class="ad-slot-body">
+                <h3><?= Helpers::e($homeAd['title']) ?></h3>
+                <?php if (!empty($homeAd['description'])): ?>
+                    <p><?= Helpers::e($homeAd['description']) ?></p>
+                <?php endif; ?>
+                <span class="btn btn-primary btn-sm"><?= Helpers::e($homeAd['cta_text'] ?: 'Learn More') ?></span>
+            </div>
+        </a>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="container" id="directory">
     <form class="filter-bar" method="get" action="<?= Helpers::url('/') ?>#directory">
         <input type="text" name="q" placeholder="Search by name or title..." value="<?= Helpers::e($filters['q']) ?>">
@@ -166,5 +186,45 @@
         </details>
     </div>
 </section>
+
+<?php if ($homeAd): ?>
+<script>
+(function () {
+    var slot = document.querySelector('.ad-slot[data-ad-id]');
+    if (!slot) return;
+    var adId = slot.getAttribute('data-ad-id');
+    var trackUrl = '<?= Helpers::url('/ads/track/') ?>';
+
+    function beacon(action) {
+        var body = new Blob(['ad_id=' + encodeURIComponent(adId)], { type: 'application/x-www-form-urlencoded' });
+        navigator.sendBeacon(trackUrl + action, body);
+    }
+
+    // Fire impression once the ad actually enters the viewport, only once.
+    if ('IntersectionObserver' in window) {
+        var seen = false;
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting && !seen) {
+                    seen = true;
+                    beacon('impression');
+                    observer.disconnect();
+                }
+            });
+        }, { threshold: 0.5 });
+        observer.observe(slot);
+    } else {
+        beacon('impression'); // no IO support — fall back to counting on render
+    }
+
+    var link = slot.querySelector('[data-ad-click]');
+    if (link) {
+        link.addEventListener('click', function () {
+            beacon('click');
+        });
+    }
+})();
+</script>
+<?php endif; ?>
 
 <?php View::partial('layouts/footer'); ?>

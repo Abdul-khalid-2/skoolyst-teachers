@@ -14,8 +14,11 @@ class HomeController extends Controller
         $page = max(1, (int) $this->input('page', 1));
 
         $result = Teacher::filter($filters, $page, 9);
+        $homeAd = AdEngine::getAd(ADS_PLACEMENT_HOME_TOP);
 
+        // var_dump($homeAd); // Debugging line to check the value of $homeAd
         View::render('home/index', [
+            'homeAd'        => $homeAd,
             'title'         => 'Find Qualified Teachers in Pakistan | Skoolyst Teachers',
             'description'   => 'Discover qualified school, college, university, science, computer, mathematics and private teachers in Pakistan. Browse teacher portfolios and connect with the right educator.',
             'canonical'     => Helpers::url('/'),

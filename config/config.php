@@ -75,6 +75,13 @@ define('MAIL_PASSWORD', Env::get('MAIL_PASSWORD', ''));           // SMTP auth p
 define('MAIL_FROM_ADDRESS', Env::get('MAIL_FROM_ADDRESS', 'no-reply@skoolyst.com'));
 define('MAIL_FROM_NAME', Env::get('MAIL_FROM_NAME', 'Skoolyst Teachers'));
 
+// ----- AdEngine (Skoolyst Ads) -----
+// Register this app first at https://ads.skoolyst.com/admin/apps.php to
+// get an API key and define placement codes, then fill these in .env.
+define('ADS_API_BASE', Env::get('ADS_API_BASE', 'https://ads.skoolyst.com/api/v1'));
+define('ADS_API_KEY', Env::get('ADS_API_KEY', ''));
+define('ADS_PLACEMENT_HOME_TOP', Env::get('ADS_PLACEMENT_HOME_TOP', 'home_top'));
+
 // ----- Error reporting -----
 if (APP_DEBUG) {
     error_reporting(E_ALL);

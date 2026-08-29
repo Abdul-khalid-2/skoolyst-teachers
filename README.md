@@ -414,3 +414,26 @@ scope of validation/reporting and "no unrelated changes"):**
 6. No server restart, cron, or queue changes required - everything here
    is plain PHP/HTML/CSS/static-file changes.
 
+
+
+
+## Known Trade-offs / Future Improvements
+
+### AdEngine (Skoolyst Ads) integration — synchronous fetch on page load
+
+The landing page's ad slot (`core/AdEngine.php` → `AdEngine::getAd()`) calls
+`ads.skoolyst.com` **synchronously**, blocking the page render until it
+responds or times out (currently 8s connect / 15s total).
+
+- Observed response times from `ads.skoolyst.com` have ranged from ~2.6s to
+  ~8.6s (likely Hostinger edge/CDN warm-up), so the timeout was raised to
+  avoid false "no ad" results.
+- **Trade-off:** if the AdEngine service is ever slow or down, the landing
+  page will wait up to 15s before giving up (it fails soft — no ad slot is
+  rendered, page doesn't break — but the *wait* still happens).
+- **If this connection stays consistently slow going forward**, switch to an
+  **async load**: render the page without the ad, then fetch it via a small
+  AJAX call after page load and inject it into the `.ad-slot` container.
+  This keeps page load fast regardless of AdEngine's response time.
+- Not urgent today — current timeouts are acceptable — but worth revisiting
+  if real users start noticing slow page loads.
