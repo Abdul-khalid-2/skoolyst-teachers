@@ -63,3 +63,93 @@ if ($errno !== 0) {
 } else {
     echo "Non-2xx status - check raw body in step 3 for the API's error message.\n";
 }
+
+
+
+
+
+
+# Skoolyst Ad-Engine Integration — Reusable Blueprint Prompt
+
+// Is prompt ko kisi bhi naye Skoolyst-family project (ya kisi bhi PHP app) mein
+// `ads.skoolyst.com` ka ad slot lagane ke liye copy-paste kar ke use karo. Sirf
+// project-specific naam/paths change karne hain — logic same rehta hai.
+
+
+// Mujhe is project mein shared Skoolyst ad platform (ads.skoolyst.com) ka
+// ek ad slot integrate karna hai — same pattern jo teachers.skoolyst.com aur
+// skoolyst-blog-management-system mein already use ho chuka hai. Server-side
+// only integration chahiye (API key kabhi browser tak na jaye).
+
+// Requirements:
+
+// 1. config/ads.php — .env se base_url, api_key, cache_ttl, aur
+//    placements (friendly slot name => ads.skoolyst.com placement code) load kare.
+
+// 2. AdService.php (app/Services/):
+//    - getAd(string $placementCode): ?array
+//      - disk par cache kare: sys_get_temp_dir() . '/skoolyst_ad_' . md5($placementCode) . '.json'
+//      - cache_ttl ke andar cached value use kare
+//      - IMPORTANT: transport-level failure (timeout/DNS/curl error) ko kabhi
+//        cache NA kare — sirf successful response (chahe ad null ho ya real ho)
+//        cache ho.
+//      - curl timeout generous rakhna (CONNECTTIMEOUT ~10s, TIMEOUT ~20s) —
+//        ad server kabhi kabhi 1-7+ seconds le leta hai, chota timeout false
+//        "no ad" de dega.
+//    - placementCode(string $slot): friendly slot name ko config se resolve kare
+//    - trackImpression() / trackClick() — apne app ke apne endpoint ke zariye
+//      relay karein, browser directly ads.skoolyst.com ko hit na kare
+//    - imageUrl(?string $path) — relative image_path ko ad app ke document
+//      root se resolve kare (api/vN path strip kar ke)
+
+// 3. resources/views/components/ad-slot.php:
+//    - $placement (friendly name) le kar AdService se ad fetch kare
+//    - agar $ad null ho to kuch bhi render na kare (silent return)
+//    - koi var_dump/debug output PRODUCTION view mein na chhodna
+
+// 4. Debug/diagnostic route (temporary, controller mein):
+//    - raw config dump
+//    - direct curl call with generous timeout + full raw response + decoded array
+//    - CACHE FILE KO CLEAR KAR KE getAd() dobara call kare (taake purana
+//      cached null result confuse na kare)
+//    - verdict: config missing / curl error / non-2xx / ad:null / success
+//    - is route ko permanent nahi rakhna — testing ke baad hata dena
+
+// 5. .env mein add karna:
+//    ADS_API_BASE=
+//    ADS_API_KEY=
+//    ADS_CACHE_TTL=30
+//    ADS_PLACEMENT_<SLOT_NAME>=
+
+// Batao kaunse placement(s) chahiye aur kis page(s) par lagane hain, phir
+// step-by-step implement karo — pehle config, phir AdService, phir component,
+// phir landing page integration, phir debug route se live test.
+
+
+## Common gotchas (isko dhyan mein rakhna — bar bar yehi masla aata hai)
+
+// 1. **Stale cached `null`** — agar pehle ad inactive/key galat thi, us waqt ka
+//    `null` disk par cache ho chuka hoga. `cache_ttl` guzarne tak wahi null
+//    milta rahega. Debug route hamesha cache file clear kar ke test kare,
+//    warna "debug kaam kar raha hai but live page NULL de raha hai" wala
+//    confusion hoga.
+
+// 2. **Timeout mismatch** — `AdService`'s apna internal curl timeout debug
+//    route ke manual curl se chota na ho, warna live traffic mein intermittent
+//    null aayega jab debug hamesha pass hoga.
+
+// 3. **APP_URL / actual serving path mismatch** — `.env` ka `APP_URL` check
+//    karo ke wo wahi URL hai jahan browser mein test kar rahe ho. Alag path
+//    test karne se "not working" wala false alarm milta hai.
+
+// 4. **var_dump() production mein reh jana** — debug ke liye dala gaya
+//    `var_dump($__ad)` component file mein delete karna mat bhoolna.
+
+// 5. **Malformed `click_url` from API** — kabhi kabhi ad data mein double-URL
+//    jaisa `click_url` aa sakta hai (e.g. `https://x.inhttps://y.com`) — is
+//    par bharosa mat karo, render se pehle sanity-check zaroor karo.
+
+// 6. **Server-side flakiness** — ads.skoolyst.com kabhi kabhi ek hi placement
+//    ke liye back-to-back calls mein alag result de sakta hai (frequency
+//    capping / fill rate). Ye is app ka bug nahi — bas note kar lo, panic mat
+//    karo.
