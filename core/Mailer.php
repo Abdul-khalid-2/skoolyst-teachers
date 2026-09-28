@@ -2,158 +2,62 @@
 
 /**
  * Mailer
- * Minimal SMTP client (no Composer/PHPMailer dependency) so the project
- * stays dependency-free, matching the rest of this framework.
- * Supports STARTTLS + AUTH LOGIN, which covers Gmail, Mailgun SMTP,
- * SendGrid SMTP, Postmark SMTP, SES SMTP, etc.
+ * Sends email through the centralised Skoolyst Email API
+ * (POST {EMAIL_API_BASE}/email/send). That service picks a sender account,
+ * delivers over SMTP, and logs the message, so this app holds no SMTP
+ * credentials of its own. The API accepts plain-text bodies only.
  */
 class Mailer
 {
     /**
-     * Send an HTML email (with plain-text fallback).
-     *
-     * @param string $to
-     * @param string $subject
-     * @param string $htmlBody
-     * @param string|null $textBody
-     * @return bool
+     * Send a plain-text email. Returns true on success (HTTP 201).
      */
-    public static function send(string $to, string $subject, string $htmlBody, ?string $textBody = null): bool
+    public static function send(string $to, string $subject, string $body): bool
     {
-        try {
-            self::deliver($to, $subject, $htmlBody, $textBody);
-            return true;
-        } catch (\Throwable $e) {
-            error_log('[Mailer] Failed to send to ' . $to . ': ' . $e->getMessage());
+        if (EMAIL_API_KEY === '') {
+            error_log('[Mailer] EMAIL_API_KEY is not set; cannot send to ' . $to);
             return false;
         }
-    }
 
-    private static function deliver(string $to, string $subject, string $htmlBody, ?string $textBody): void
-    {
-        $host       = MAIL_HOST;
-        $port       = MAIL_PORT;
-        $username   = MAIL_USERNAME;
-        $password   = MAIL_PASSWORD;
-        $encryption = MAIL_ENCRYPTION; // 'tls' | 'ssl' | ''
-        $fromEmail  = MAIL_FROM_ADDRESS;
-        $fromName   = MAIL_FROM_NAME;
+        $ch = curl_init(rtrim(EMAIL_API_BASE, '/') . '/email/send');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'Authorization: Bearer ' . EMAIL_API_KEY,
+            ],
+            CURLOPT_POSTFIELDS     => json_encode([
+                'source_app' => EMAIL_SOURCE_APP,
+                'to'         => $to,
+                'subject'    => mb_substr($subject, 0, 255),
+                'body'       => $body,
+            ]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT        => 20,
+        ]);
 
-        $transport = ($encryption === 'ssl') ? 'ssl://' : '';
-        $socket = @stream_socket_client(
-            $transport . $host . ':' . $port,
-            $errno,
-            $errstr,
-            15,
-            STREAM_CLIENT_CONNECT
-        );
+        $raw    = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
 
-        if (!$socket) {
-            throw new \RuntimeException("Could not connect to SMTP host ($errno): $errstr");
+        if ($status === 201) {
+            return true;
         }
 
-        stream_set_timeout($socket, 15);
-
-        self::expect($socket, 220);
-        self::command($socket, "EHLO " . self::heloDomain(), 250);
-
-        if ($encryption === 'tls') {
-            self::command($socket, "STARTTLS", 220);
-            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-                throw new \RuntimeException('STARTTLS negotiation failed.');
-            }
-            // Must re-EHLO after upgrading the connection.
-            self::command($socket, "EHLO " . self::heloDomain(), 250);
+        if ($raw === false) {
+            error_log('[Mailer] Email API request failed for ' . $to . ': ' . $curlError);
+            return false;
         }
 
-        self::command($socket, "AUTH LOGIN", 334);
-        self::command($socket, base64_encode($username), 334);
-        self::command($socket, base64_encode($password), 235);
-
-        self::command($socket, "MAIL FROM:<{$fromEmail}>", 250);
-        self::command($socket, "RCPT TO:<{$to}>", [250, 251]);
-        self::command($socket, "DATA", 354);
-
-        $boundary = 'skoolyst-' . bin2hex(random_bytes(8));
-        $textBody = $textBody ?: trim(strip_tags($htmlBody));
-
-        $headers = [];
-        $headers[] = "From: {$fromName} <{$fromEmail}>";
-        $headers[] = "To: <{$to}>";
-        $headers[] = "Subject: " . self::encodeHeader($subject);
-        $headers[] = "MIME-Version: 1.0";
-        $headers[] = "Content-Type: multipart/alternative; boundary=\"{$boundary}\"";
-        $headers[] = "Date: " . date('r');
-        $headers[] = "Message-ID: <" . bin2hex(random_bytes(16)) . "@" . self::heloDomain() . ">";
-
-        $body = "";
-        $body .= "--{$boundary}\r\n";
-        $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-        $body .= $textBody . "\r\n\r\n";
-
-        $body .= "--{$boundary}\r\n";
-        $body .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-        $body .= $htmlBody . "\r\n\r\n";
-
-        $body .= "--{$boundary}--\r\n";
-
-        $message = implode("\r\n", $headers) . "\r\n\r\n" . $body;
-        // Dot-stuffing per RFC 5321: lines starting with '.' get an extra '.'
-        $message = preg_replace('/^\./m', '..', $message);
-
-        fwrite($socket, $message . "\r\n.\r\n");
-        self::expect($socket, 250);
-
-        self::command($socket, "QUIT", 221);
-        fclose($socket);
-    }
-
-    private static function heloDomain(): string
-    {
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        return preg_replace('/[^a-zA-Z0-9\.\-]/', '', $host) ?: 'localhost';
-    }
-
-    private static function encodeHeader(string $value): string
-    {
-        // Encode subject as UTF-8 base64 per RFC 2047 (safe for any characters)
-        return '=?UTF-8?B?' . base64_encode($value) . '?=';
-    }
-
-    /**
-     * @param resource $socket
-     * @param int|int[] $expectedCode
-     */
-    private static function command($socket, string $line, $expectedCode): string
-    {
-        fwrite($socket, $line . "\r\n");
-        return self::expect($socket, $expectedCode);
-    }
-
-    /**
-     * @param resource $socket
-     * @param int|int[] $expectedCode
-     */
-    private static function expect($socket, $expectedCode): string
-    {
-        $response = '';
-        while ($str = fgets($socket, 515)) {
-            $response .= $str;
-            // Multi-line SMTP responses use "-" after the code except on the last line.
-            if (isset($str[3]) && $str[3] === ' ') {
-                break;
-            }
-        }
-
-        $code = (int) substr($response, 0, 3);
-        $expected = is_array($expectedCode) ? $expectedCode : [$expectedCode];
-
-        if (!in_array($code, $expected, true)) {
-            throw new \RuntimeException("Unexpected SMTP response (expected " . implode('/', $expected) . "): {$response}");
-        }
-
-        return $response;
+        // 503 (all_accounts_exhausted / send_failed) is temporary; the rest
+        // (401/403/422) mean a config or request problem.
+        $response = json_decode((string) $raw, true);
+        $code     = $response['error']['code'] ?? 'unknown';
+        $message  = $response['error']['message'] ?? (string) $raw;
+        error_log("[Mailer] Email API error for {$to} (HTTP {$status}, {$code}): {$message}");
+        return false;
     }
 }

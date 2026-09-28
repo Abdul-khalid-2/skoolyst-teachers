@@ -72,7 +72,7 @@ class AdminController extends Controller
         $sent = Notifications::sendWelcomeEmail($teacher);
         Helpers::flash($sent ? 'success' : 'errors', $sent
             ? 'Welcome email sent to ' . $teacher['email'] . '.'
-            : 'Could not send the welcome email. Check your SMTP settings and try again.');
+            : 'Could not send the welcome email. Check the email API settings (SKOOLYST_EMAIL_API_KEY) and the error log, then try again.');
 
         $this->redirect('/admin/teachers');
     }
@@ -92,7 +92,7 @@ class AdminController extends Controller
         $sent = Notifications::sendProfileReminderEmail($teacher, $missing);
         Helpers::flash($sent ? 'success' : 'errors', $sent
             ? 'Profile completion reminder sent to ' . $teacher['email'] . '.'
-            : 'Could not send the reminder email. Check your SMTP settings and try again.');
+            : 'Could not send the reminder email. Check the email API settings (SKOOLYST_EMAIL_API_KEY) and the error log, then try again.');
 
         $this->redirect('/admin/teachers');
     }

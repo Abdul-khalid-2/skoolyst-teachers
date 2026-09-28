@@ -3,7 +3,7 @@
  * Global application configuration.
  *
  * This file itself is safe to commit — it contains no secrets. Real,
- * per-environment values (DB credentials, SMTP credentials) live in a
+ * per-environment values (DB credentials, API keys) live in a
  * ".env" file at the project root, which is gitignored and never pushed.
  * Copy .env.example to .env and fill in your real values there.
  */
@@ -66,14 +66,13 @@ define('MAX_RESUME_SIZE', 5 * 1024 * 1024);           // 5MB
 define('ALLOWED_PHOTO_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
 define('ALLOWED_RESUME_TYPES', ['application/pdf']);
 
-// ----- Mail (SMTP) -----
-define('MAIL_HOST', Env::get('MAIL_HOST', 'smtp.gmail.com'));
-define('MAIL_PORT', (int) Env::get('MAIL_PORT', 587));
-define('MAIL_ENCRYPTION', Env::get('MAIL_ENCRYPTION', 'tls'));   // 'tls' | 'ssl'
-define('MAIL_USERNAME', Env::get('MAIL_USERNAME', ''));           // SMTP auth username
-define('MAIL_PASSWORD', Env::get('MAIL_PASSWORD', ''));           // SMTP auth password / app password
-define('MAIL_FROM_ADDRESS', Env::get('MAIL_FROM_ADDRESS', 'no-reply@skoolyst.com'));
-define('MAIL_FROM_NAME', Env::get('MAIL_FROM_NAME', 'Skoolyst Teachers'));
+// ----- Email (Skoolyst Email API) -----
+// Mail is sent through the shared service at ads.skoolyst.com. Get a key
+// from Admin -> Email Accounts -> API Clients there; EMAIL_SOURCE_APP must
+// match the app name the key was issued for. Keep the key server-side only.
+define('EMAIL_API_BASE', Env::get('EMAIL_API_BASE', 'https://ads.skoolyst.com/api/v1'));
+define('EMAIL_API_KEY', (string) Env::get('SKOOLYST_EMAIL_API_KEY', ''));
+define('EMAIL_SOURCE_APP', Env::get('EMAIL_SOURCE_APP', 'skoolyst-teachers'));
 
 // ----- AdEngine (Skoolyst Ads) -----
 // Register this app first at https://ads.skoolyst.com/admin/apps.php to
