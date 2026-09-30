@@ -18,6 +18,11 @@
             </div>
             <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>
+        <div class="auth-divider"><span>or</span></div>
+        <a href="<?= Helpers::url('/auth/skoolyst') ?>" class="btn btn-skoolyst btn-block">
+            <img src="<?= Helpers::asset('image/favicon/favicon-32.png') ?>" alt="" width="20" height="20">
+            Continue with Skoolyst
+        </a>
         <div class="auth-footer-link">New here? <a href="<?= Helpers::url('/register') ?>">Create a free portfolio</a></div>
     </div>
 </div>

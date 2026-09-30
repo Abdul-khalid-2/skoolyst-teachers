@@ -282,6 +282,11 @@ textarea.form-control { min-height: 110px; resize: vertical; }
 .form-control:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(10,45,82,.08); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text-muted); font-size: 13px; }
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: #e3e8ef; }
+.btn-skoolyst { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: var(--primary); border: 1px solid #d5dde8; font-weight: 600; }
+.btn-skoolyst:hover { background: #f5f8fc; border-color: var(--primary); transform: translateY(-2px); }
+.btn-skoolyst img { width: 20px; height: 20px; border-radius: 4px; }
 .auth-footer-link { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
 .auth-footer-link a { color: var(--primary); font-weight: 600; }
 

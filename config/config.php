@@ -74,6 +74,15 @@ define('EMAIL_API_BASE', Env::get('EMAIL_API_BASE', 'https://ads.skoolyst.com/ap
 define('EMAIL_API_KEY', (string) Env::get('SKOOLYST_EMAIL_API_KEY', ''));
 define('EMAIL_SOURCE_APP', Env::get('EMAIL_SOURCE_APP', 'skoolyst-teachers'));
 
+// ----- Login with Skoolyst (central SSO at skoolyst.com) -----
+// Get the client id/secret from skoolyst.com -> Dashboard -> Connected Apps.
+// SKOOLYST_AUTH_REDIRECT_URI must match the registered redirect URL
+// byte-for-byte; it defaults to this app's /auth/skoolyst/callback route.
+define('SKOOLYST_AUTH_BASE', Env::get('SKOOLYST_AUTH_BASE', 'https://skoolyst.com'));
+define('SKOOLYST_AUTH_CLIENT_ID', (string) Env::get('SKOOLYST_AUTH_CLIENT_ID', ''));
+define('SKOOLYST_AUTH_CLIENT_SECRET', (string) Env::get('SKOOLYST_AUTH_CLIENT_SECRET', ''));
+define('SKOOLYST_AUTH_REDIRECT_URI', Env::get('SKOOLYST_AUTH_REDIRECT_URI', BASE_URL . '/auth/skoolyst/callback'));
+
 // ----- AdEngine (Skoolyst Ads) -----
 // Register this app first at https://ads.skoolyst.com/admin/apps.php to
 // get an API key and define placement codes, then fill these in .env.

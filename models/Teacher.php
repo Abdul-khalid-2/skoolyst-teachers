@@ -23,6 +23,11 @@ class Teacher extends Model
         return self::findBy('email', $email);
     }
 
+    public static function findBySkoolystId(int $skoolystId): ?array
+    {
+        return self::findBy('skoolyst_id', $skoolystId);
+    }
+
     public static function findBySlug(string $slug): ?array
     {
         return self::findBy('slug', $slug);
