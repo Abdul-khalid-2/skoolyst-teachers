@@ -21,6 +21,8 @@ $router = new Router();
 // ----- Public site -----
 $router->get('/', [HomeController::class, 'index']);
 $router->get('/sitemap.xml', [SitemapController::class, 'index']);
+$router->get('/privacy-policy', [PageController::class, 'privacy']);
+$router->get('/terms-of-service', [PageController::class, 'terms']);
 
 // ----- AdEngine tracking proxy (keeps ADS_API_KEY server-side only) -----
 $router->post('/ads/track/impression', [AdsController::class, 'impression']);

@@ -2,8 +2,8 @@
 
 /**
  * Generates /sitemap.xml on every request (no static file on disk, so it's
- * always in sync with current teacher data). Includes only the homepage and
- * currently public + active teacher profiles - see
+ * always in sync with current teacher data). Includes the homepage, the
+ * legal pages, and currently public + active teacher profiles - see
  * Teacher::allPublicForSitemap() for the exact visibility rule. Auth,
  * dashboard, and admin routes are never listed here since nothing in this
  * controller references them.
@@ -19,6 +19,16 @@ class SitemapController extends Controller
                 'loc'        => Helpers::url('/'),
                 'changefreq' => 'daily',
                 'priority'   => '1.0',
+            ],
+            [
+                'loc'        => Helpers::url('/privacy-policy'),
+                'changefreq' => 'yearly',
+                'priority'   => '0.2',
+            ],
+            [
+                'loc'        => Helpers::url('/terms-of-service'),
+                'changefreq' => 'yearly',
+                'priority'   => '0.2',
             ],
         ];
 

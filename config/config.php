@@ -66,6 +66,11 @@ define('MAX_RESUME_SIZE', 5 * 1024 * 1024);           // 5MB
 define('ALLOWED_PHOTO_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
 define('ALLOWED_RESUME_TYPES', ['application/pdf']);
 
+// ----- Support contact -----
+// Shown on the Privacy Policy and Terms pages (and used by Google's OAuth
+// consent screen review), so it must be a mailbox someone actually reads.
+define('SUPPORT_EMAIL', Env::get('SUPPORT_EMAIL', 'admin@skoolyst.com'));
+
 // ----- Email (Skoolyst Email API) -----
 // Mail is sent through the shared service at ads.skoolyst.com. Get a key
 // from Admin -> Email Accounts -> API Clients there; EMAIL_SOURCE_APP must

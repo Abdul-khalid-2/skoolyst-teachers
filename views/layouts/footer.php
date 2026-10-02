@@ -2,6 +2,8 @@
     <div class="container">
         &copy; <?= date('Y') ?> Skoolyst Teachers. All rights reserved. &nbsp;|&nbsp;
         <a href="<?= Helpers::url('/') ?>">Directory</a> &nbsp;|&nbsp;
+        <a href="<?= Helpers::url('/privacy-policy') ?>">Privacy Policy</a> &nbsp;|&nbsp;
+        <a href="<?= Helpers::url('/terms-of-service') ?>">Terms of Service</a> &nbsp;|&nbsp;
         <a href="https://skoolyst.com" target="_blank">Skoolyst.com</a>
     </div>
 </footer>
