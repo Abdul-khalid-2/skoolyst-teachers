@@ -20,6 +20,7 @@ CREATE TABLE `teachers` (
     `email`              VARCHAR(191)  NOT NULL,
     `email_verified_at`  DATETIME      NULL,
     `skoolyst_id`        BIGINT UNSIGNED NULL COMMENT 'Central Skoolyst account id (Login with Skoolyst)',
+    `google_id`          VARCHAR(191)  NULL COMMENT 'Google account id / sub (Continue with Google)',
     `status`             ENUM('active','inactive','pending') NOT NULL DEFAULT 'active',
     `is_public`          TINYINT(1)    NOT NULL DEFAULT 1 COMMENT 'Show/hide portfolio in public directory',
 
@@ -72,6 +73,7 @@ CREATE TABLE `teachers` (
     UNIQUE KEY `uq_teachers_slug` (`slug`),
     UNIQUE KEY `uq_teachers_email` (`email`),
     UNIQUE KEY `uq_teachers_skoolyst_id` (`skoolyst_id`),
+    UNIQUE KEY `uq_teachers_google_id` (`google_id`),
 
     -- Indexes to keep the public directory + filters fast at scale
     KEY `idx_teachers_role_status_public` (`role`, `status`, `is_public`),

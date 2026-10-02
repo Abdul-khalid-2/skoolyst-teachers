@@ -83,6 +83,14 @@ define('SKOOLYST_AUTH_CLIENT_ID', (string) Env::get('SKOOLYST_AUTH_CLIENT_ID', '
 define('SKOOLYST_AUTH_CLIENT_SECRET', (string) Env::get('SKOOLYST_AUTH_CLIENT_SECRET', ''));
 define('SKOOLYST_AUTH_REDIRECT_URI', Env::get('SKOOLYST_AUTH_REDIRECT_URI', BASE_URL . '/auth/skoolyst/callback'));
 
+// ----- Continue with Google (this app's own Google Cloud OAuth client) -----
+// Google Cloud Console -> APIs & Services -> Credentials -> OAuth client ID
+// (Web application). GOOGLE_REDIRECT_URI must be listed there EXACTLY under
+// "Authorized redirect URIs"; it defaults to this app's /auth/google/callback.
+define('GOOGLE_CLIENT_ID', (string) Env::get('GOOGLE_CLIENT_ID', ''));
+define('GOOGLE_CLIENT_SECRET', (string) Env::get('GOOGLE_CLIENT_SECRET', ''));
+define('GOOGLE_REDIRECT_URI', Env::get('GOOGLE_REDIRECT_URI', BASE_URL . '/auth/google/callback'));
+
 // ----- AdEngine (Skoolyst Ads) -----
 // Register this app first at https://ads.skoolyst.com/admin/apps.php to
 // get an API key and define placement codes, then fill these in .env.

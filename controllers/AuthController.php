@@ -95,9 +95,6 @@ class AuthController extends Controller
 
     /**
      * skoolyst.com redirects back here with ?code=&state= (or ?error=).
-     * Finds the local teacher by Skoolyst id, links an existing account
-     * with the same verified email, or creates a new teacher account
-     * exactly like the normal register form does.
      */
     public function skoolystCallback(): void
     {
@@ -107,39 +104,100 @@ class AuthController extends Controller
         }
 
         $code = $_GET['code'] ?? '';
-        $skoolystUser = is_string($code) && $code !== '' ? SkoolystAuth::exchangeCode($code) : null;
-        if (!$skoolystUser) {
+        $identity = is_string($code) && $code !== '' ? SkoolystAuth::exchangeCode($code) : null;
+        if (!$identity) {
             Helpers::flash('errors', 'Could not sign you in with Skoolyst. Please try again.');
             $this->redirect('/login');
         }
 
-        $user = Teacher::findBySkoolystId($skoolystUser['id']);
+        $this->loginWithProvider('skoolyst_id', $identity);
+    }
 
-        if (!$user && ($existing = Teacher::findByEmail($skoolystUser['email']))) {
-            // Only link by email when skoolyst.com has verified the address,
-            // and never auto-link the super-admin account.
-            if (!$skoolystUser['email_verified'] || $existing['role'] === 'super-admin') {
+    /**
+     * "Continue with Google" — send the browser to Google's consent screen.
+     */
+    public function googleRedirect(): void
+    {
+        if (Auth::check()) $this->redirect('/dashboard');
+
+        if (!GoogleAuth::isConfigured()) {
+            Helpers::flash('errors', 'Continue with Google is not available right now. Please use your email and password.');
+            $this->redirect('/login');
+        }
+
+        header('Location: ' . GoogleAuth::authorizeUrl());
+        exit;
+    }
+
+    /**
+     * Google redirects back here with ?code=&state=, or ?error=access_denied
+     * when the user cancels on the consent screen.
+     */
+    public function googleCallback(): void
+    {
+        $stateOk = GoogleAuth::verifyState($_GET['state'] ?? null);
+
+        if (($_GET['error'] ?? '') === 'access_denied') {
+            $this->redirect('/login'); // user cancelled — no error needed
+        }
+
+        if (!$stateOk) {
+            Helpers::flash('errors', 'Your Google sign-in expired or was invalid. Please try again.');
+            $this->redirect('/login');
+        }
+
+        $code = $_GET['code'] ?? '';
+        $identity = is_string($code) && $code !== '' ? GoogleAuth::exchangeCode($code) : null;
+        if (!$identity) {
+            Helpers::flash('errors', 'Could not sign you in with Google. Please try again.');
+            $this->redirect('/login');
+        }
+
+        $this->loginWithProvider('google_id', $identity);
+    }
+
+    /**
+     * Shared by every external login (Skoolyst, Google). $column is the
+     * teachers column holding that provider's stable account id; $identity
+     * is ['id', 'name', 'email', 'email_verified'] from the provider.
+     *
+     *  - Known provider id               -> log in.
+     *  - Email exists, column empty,
+     *    email verified, not super-admin -> link the provider id, log in.
+     *  - Email exists otherwise          -> refuse; use password instead.
+     *  - Unknown email                   -> create a teacher account exactly
+     *                                       like the register form does.
+     */
+    private function loginWithProvider(string $column, array $identity): void
+    {
+        $user = Teacher::findBy($column, $identity['id']);
+
+        if (!$user && ($existing = Teacher::findByEmail($identity['email']))) {
+            // Never link on email alone: the provider must have verified the
+            // address, the account must not already be linked to a different
+            // provider account, and the super-admin is never auto-linked.
+            if (!$identity['email_verified'] || !empty($existing[$column]) || $existing['role'] === 'super-admin') {
                 Helpers::flash('errors', 'An account with this email already exists. Please log in with your password.');
-                Helpers::setOld(['email' => $skoolystUser['email']]);
+                Helpers::setOld(['email' => $identity['email']]);
                 $this->redirect('/login');
             }
             Teacher::updateProfile((int) $existing['id'], array_filter([
-                'skoolyst_id'       => $skoolystUser['id'],
+                $column             => $identity['id'],
                 'email_verified_at' => $existing['email_verified_at'] ? null : date('Y-m-d H:i:s'),
             ]));
             $user = Teacher::find((int) $existing['id']);
         }
 
         if (!$user) {
-            $fullName = $skoolystUser['name'] !== '' ? $skoolystUser['name'] : strstr($skoolystUser['email'], '@', true);
+            $fullName = $identity['name'] !== '' ? $identity['name'] : strstr($identity['email'], '@', true);
             $id = Teacher::create([
                 'slug'              => Helpers::uniqueSlug($fullName),
                 'role'              => 'teacher',
-                // No local password: this account signs in through Skoolyst.
+                // No local password: this account signs in through the provider.
                 'password'          => password_hash(bin2hex(random_bytes(32)), PASSWORD_BCRYPT),
-                'email'             => $skoolystUser['email'],
-                'email_verified_at' => $skoolystUser['email_verified'] ? date('Y-m-d H:i:s') : null,
-                'skoolyst_id'       => $skoolystUser['id'],
+                'email'             => $identity['email'],
+                'email_verified_at' => $identity['email_verified'] ? date('Y-m-d H:i:s') : null,
+                $column             => $identity['id'],
                 'status'            => 'active',
                 'is_public'         => 1,
                 'full_name'         => $fullName,

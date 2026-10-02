@@ -287,6 +287,7 @@ textarea.form-control { min-height: 110px; resize: vertical; }
 .btn-skoolyst { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: var(--primary); border: 1px solid #d5dde8; font-weight: 600; }
 .btn-skoolyst:hover { background: #f5f8fc; border-color: var(--primary); transform: translateY(-2px); }
 .btn-skoolyst img { width: 20px; height: 20px; border-radius: 4px; }
+.btn-google { margin-top: 10px; }
 .auth-footer-link { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
 .auth-footer-link a { color: var(--primary); font-weight: 600; }
 
