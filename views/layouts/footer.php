@@ -1,3 +1,5 @@
+<?php require ROOT_PATH . '/views/components/skoolyst-apps.php'; ?>
+
 <footer class="app-footer">
     <div class="container">
         &copy; <?= date('Y') ?> Skoolyst Teachers. All rights reserved. &nbsp;|&nbsp;

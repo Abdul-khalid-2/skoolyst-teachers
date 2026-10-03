@@ -19,11 +19,17 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" class="form-control" required minlength="8">
+                    <div class="password-field">
+                        <input type="password" name="password" class="form-control" required minlength="8">
+                        <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Confirm Password</label>
-                    <input type="password" name="password_confirmation" class="form-control" required minlength="8">
+                    <div class="password-field">
+                        <input type="password" name="password_confirmation" class="form-control" required minlength="8">
+                        <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                    </div>
                 </div>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Create Free Portfolio</button>

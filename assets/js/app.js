@@ -42,6 +42,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Show/hide password (login & register forms)
+    document.querySelectorAll('.password-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = btn.parentNode.querySelector('input');
+            var icon = btn.querySelector('i');
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            icon.className = show ? 'fa fa-eye-slash' : 'fa fa-eye';
+        });
+    });
+
     // Auto-hide flash alerts
     document.querySelectorAll('.alert').forEach(function (el) {
         setTimeout(function () { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; }, 4000);

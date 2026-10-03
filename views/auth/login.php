@@ -14,7 +14,10 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <div class="password-field">
+                    <input type="password" name="password" class="form-control" required>
+                    <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>

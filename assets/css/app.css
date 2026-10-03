@@ -280,6 +280,14 @@ img { max-width: 100%; display: block; }
 }
 textarea.form-control { min-height: 110px; resize: vertical; }
 .form-control:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(10,45,82,.08); }
+.password-field { position: relative; }
+.password-field .form-control { padding-right: 44px; }
+.password-toggle {
+    position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+    width: 34px; height: 34px; border: none; border-radius: 6px; background: none;
+    color: var(--text-muted); cursor: pointer; font-size: 15px;
+}
+.password-toggle:hover, .password-toggle:focus-visible { color: var(--primary); background: var(--primary-soft); outline: none; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
 .auth-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text-muted); font-size: 13px; }
@@ -442,3 +450,28 @@ table.app-table tbody tr.row-elevated { z-index: 10; }
 /* ===== Footer ===== */
 .app-footer { background: var(--primary); color: #cfdcea; padding: 34px 0; text-align: center; font-size: 13.5px; margin-top: 40px; }
 .app-footer a { color: #fff; }
+
+/* ===== Other Skoolyst Apps (cards above the footer) ===== */
+.skoolyst-apps { background: #fff; border-top: 1px solid var(--border); padding: 48px 0; margin-top: 40px; }
+.skoolyst-apps + .app-footer { margin-top: 0; }
+.skoolyst-apps-title { text-align: center; font-size: 24px; color: var(--primary); margin: 0 0 28px; }
+.skoolyst-apps-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+.skoolyst-apps-grid li { flex: 0 1 calc((100% - 36px) / 3); }
+.skoolyst-app-card {
+    display: flex; flex-direction: column; height: 100%; padding: 22px; background: #fff;
+    border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); transition: .25s;
+}
+.skoolyst-app-card:hover, .skoolyst-app-card:focus-visible { box-shadow: var(--shadow-hover); transform: translateY(-4px); border-color: var(--primary); outline: none; }
+.skoolyst-app-icon {
+    width: 44px; height: 44px; border-radius: 10px; background: var(--primary-soft); color: var(--primary);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 19px; margin-bottom: 14px;
+}
+.skoolyst-app-name { font-weight: 600; font-size: 17px; color: var(--text-dark); margin-bottom: 4px; }
+.skoolyst-app-desc { color: var(--text-muted); font-size: 13.5px; line-height: 1.55; }
+@media (max-width: 860px) { .skoolyst-apps-grid li { flex-basis: calc((100% - 18px) / 2); } }
+@media (max-width: 560px) {
+    .skoolyst-apps { padding: 36px 0; }
+    .skoolyst-apps-title { font-size: 21px; }
+    .skoolyst-apps-grid { gap: 14px; }
+    .skoolyst-apps-grid li { flex-basis: 100%; }
+}
